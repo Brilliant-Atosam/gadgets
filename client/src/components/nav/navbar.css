@@ -7,6 +7,7 @@
   align-items: center;
   justify-content: space-between;
   padding: 0 20px;
+  position: relative;
 }
 .nav-right {
   display: flex;
@@ -50,5 +51,27 @@
   }
   .toggler {
     display: block !important;
+  }
+  .menu-list-mb {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    position: absolute;
+    top: 60px;
+    right: 0;
+    background: #087a75;
+    height: calc(100vh - 60px);
+    width: 50%;
+    transition: 1s ease;
+  }
+  .menu-item-mb {
+    font-size: 16px;
+    width: 100%;
+    text-align: center;
+    padding: 20px;
+    cursor: pointer;
+  }
+  .menu-item-mb:not(:last-child) {
+    border-bottom: 2px solid white;
   }
 }

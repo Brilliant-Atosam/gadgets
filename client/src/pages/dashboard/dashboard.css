@@ -1,0 +1,98 @@
+.dashboard-container {
+  width: 100%;
+  background-color: #30e6dd1b;
+  /* height: fit-content; */
+  /* min-height: calc(100vh - 60px); */
+  padding: 20px;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  align-items: start;
+}
+.dash-left {
+  width: 100%;
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  min-width: 320px;
+}
+.quick-stat {
+  display: flex;
+  flex-direction: column;
+  align-items: start;
+  justify-content: center;
+  width: 98%;
+  padding: 10px;
+  border: 2px solid #087a75;
+  border-radius: 7px;
+}
+.quick-stat-heading {
+  font-weight: 200;
+  font-size: 14px;
+  margin-left: 10px;
+}
+.quick-stat-container {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  width: 100%;
+}
+.quick-stat-item {
+  height: 90px;
+  width: 90px;
+  border-radius: 50%;
+  background-color: #087a75;
+  margin: 10px 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-direction: column;
+  color: white;
+}
+.quick-stat-item .number {
+  font-size: 13px;
+}
+.quick-stat-item .desc {
+  font-size: 12px;
+}
+.drugs-container {
+  width: 98%;
+  height: 60vh;
+  border: 2px solid #087a75;
+  border-radius: 7px;
+}
+.dash-right {
+  flex: 2;
+  width: 100%;
+  border: 2px solid #087a75;
+  border-radius: 7px;
+  height: calc(100vh - 130px) !important;
+}
+@media screen and (max-width: 770px) {
+  .quick-stat-item {
+    width: 70px;
+    height: 70px;
+  }
+}
+@media screen and (max-width: 500px) {
+  .dashboard-container {
+    flex-direction: column;
+    padding: 10px;
+  }
+  .quick-stat {
+    flex-wrap: wrap;
+  }
+  .quick-stat-item {
+    height: 80px;
+    width: 80px;
+    margin: 5px;
+  }
+  .dash-left {
+    width: 98vw;
+    margin: auto;
+  }
+  .dash-right {
+    flex: 1;
+  }
+}

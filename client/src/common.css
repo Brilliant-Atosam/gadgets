@@ -14,6 +14,9 @@
   justify-content: center;
   flex-direction: column;
 }
+.no-show {
+  display: none;
+}
 .alert {
   width: 100%;
   max-width: 400px;
@@ -24,7 +27,7 @@
 .p20 {
   padding: 20px;
 }
-.ml5{
+.ml5 {
   margin-left: 5px;
 }
 .btn {
