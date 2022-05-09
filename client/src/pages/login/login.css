@@ -1,0 +1,27 @@
+.login-container {
+  height: 100vh;
+  background: linear-gradient(
+      rgba(48, 230, 220, 0.226) 100%,
+      rgba(48, 230, 220, 0.226) 100%
+    ),
+    url("../../bg.jpg");
+  background-size: cover;
+  width: 100vw;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-direction: column;
+}
+.login-greetings {
+  font-weight: 300;
+  color: #087a75;
+  width: 100%;
+  margin: 20px auto;
+  text-align: center;
+}
+.login-btn {
+  width: 100%;
+  max-width: 400px;
+  background: #087a75;
+  color: white;
+}

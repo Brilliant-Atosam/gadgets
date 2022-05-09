@@ -24,7 +24,5 @@ server.post("/", (req, res) => {
 });
 server.use("/auth", require("./routes/auth"));
 server.use("/drugs", require("./routes/drugs"));
-console.log(
-  (Math.floor(Math.random() * 10000) + 10000).toString().substring(1)
-);
+server.use("/sales", require("./routes/sales"));
 server.listen(process.env.PORT || 3000, () => console.log("Server is running"));
