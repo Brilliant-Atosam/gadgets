@@ -8,11 +8,37 @@
 }
 .container {
   width: 100vw;
+  overflow-x: hidden !important;
+  position: relative;
   margin: auto;
   display: flex;
   align-items: center;
   justify-content: center;
   flex-direction: column;
+}
+.action-btn {
+  display: flex;
+  align-items: center;
+  justify-content: space-around;
+  gap: 5px;
+  width: 100%;
+}
+.action-icon {
+  cursor: pointer;
+  color: #087a75;
+  border: 2px solid #087a75;
+  padding: 10px;
+  border-radius: 4px;
+  box-sizing: content-box;
+}
+.heading {
+  font-weight: 200;
+  font-size: 14px;
+  margin-left: 10px;
+}
+.icon-link {
+  cursor: pointer;
+  color: #087a75 !important;
 }
 .no-show {
   display: none;
@@ -30,6 +56,38 @@
 .ml5 {
   margin-left: 5px;
 }
+.mr10 {
+  margin-right: 10px;
+}
+.dial-icon {
+  font-size: 40px !important;
+  color: #087a75;
+}
+.cancel {
+  color: #bd1818;
+}
+.dial-heading {
+  color: #087a75;
+}
+#drug-img {
+  display: none !important;
+}
+.dial-input {
+  color: #087a75 !important;
+  font-weight: 600 !important;
+  letter-spacing: 3px !important;
+}
+.file-picker {
+  font-size: 60px !important;
+  cursor: pointer;
+  color: #087a75;
+}
+.img-preview {
+  height: 100px;
+  width: 100px;
+  object-fit: cover;
+  border-radius: 50%;
+}
 .btn {
   border: none;
   padding: 10px 20px;
@@ -40,4 +98,14 @@
 .btn:disabled {
   cursor: not-allowed;
   font-weight: 300;
+}
+::-webkit-scrollbar {
+  width: 5px;
+}
+::-webkit-scrollbar-track {
+  background: white;
+}
+::-webkit-scrollbar-thumb {
+  background: #087a75;
+  border-radius: 10px;
 }

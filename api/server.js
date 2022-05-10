@@ -19,7 +19,7 @@ server.use(cors());
 // UPLOAD
 
 // routes
-server.post("/", (req, res) => {
+server.get("/", (req, res) => {
   res.send("Hello Philomina Fosua");
 });
 server.use("/auth", require("./routes/auth"));

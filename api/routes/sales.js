@@ -4,7 +4,7 @@ const Sales = require("../models/Sales");
 // GET ALL SALES
 router.get("/", async (req, res) => {
   const sales = await Sales.find();
-  res.json(sales)
+  res.json(sales);
 });
 // GET ALL SALES PER DAY
 router.get("/day", async (req, res) => {
@@ -31,7 +31,7 @@ router.post("/", async (req, res) => {
     const newSales = new Sales({
       id: (Math.floor(Math.random() * 10000) + 10000).toString().substring(1),
       drug_id,
-      drug_name,
+      drug_name: drug.name,
       quantity,
       price: quantity * drug.price,
     });
@@ -45,8 +45,6 @@ router.post("/", async (req, res) => {
 });
 
 // REVERSE SALES
-router.delete("/:id", async (req, res) => {
-
-});
+router.delete("/:id", async (req, res) => {});
 
 module.exports = router;

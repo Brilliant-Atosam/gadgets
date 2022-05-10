@@ -2,7 +2,7 @@
   width: 100%;
   background-color: #30e6dd1b;
   /* height: fit-content; */
-  /* min-height: calc(100vh - 60px); */
+  min-height: calc(100vh - 60px);
   padding: 20px;
   display: flex;
   flex-wrap: wrap;
@@ -27,10 +27,9 @@
   border: 2px solid #087a75;
   border-radius: 7px;
 }
-.quick-stat-heading {
-  font-weight: 200;
-  font-size: 14px;
-  margin-left: 10px;
+.head-links{
+  display: flex;
+  align-items: center;
 }
 .quick-stat-container {
   display: flex;
@@ -61,6 +60,16 @@
   height: 60vh;
   border: 2px solid #087a75;
   border-radius: 7px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+.drugs-top, .sales-top{
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 10px 20px;
 }
 .dash-right {
   flex: 2;
