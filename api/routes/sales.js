@@ -1,4 +1,5 @@
 const router = require("express").Router();
+const moment = require("moment");
 const Drug = require("../models/Drug");
 const Sales = require("../models/Sales");
 // GET ALL SALES
@@ -6,38 +7,33 @@ router.get("/", async (req, res) => {
   const sales = await Sales.find();
   res.json(sales);
 });
-// GET ALL SALES PER DAY
-router.get("/day", async (req, res) => {
-  res.send("Drugs");
-});
-// GET ALL SALES PER WEEK
-router.get("/week", async (req, res) => {
-  res.send("Drugs");
-});
-// GET ALL SALES PER MONTH
-router.get("/month", async (req, res) => {
-  res.send("Drugs");
-});
-// GET ALL SALES PER YEAR
-router.get("/year", async (req, res) => {
-  res.send("Drugs");
+router.get("/:drug_id", async (req, res) => {
+  const { drug_id } = req.params;
+  const sales = await Sales.find({ drug_id });
+  res.json(sales);
 });
 // ADD SALES
 router.post("/", async (req, res) => {
-  const { drug_id, drug_name, quantity } = req.body;
-  console.log(req.body);
+  const { drug_id, drug_name, quantity, cost, time } = req.body;
+
   try {
     const drug = await Drug.findOne({ id: drug_id });
-    const newSales = new Sales({
-      id: (Math.floor(Math.random() * 10000) + 10000).toString().substring(1),
-      drug_id,
-      drug_name: drug.name,
-      quantity,
-      price: quantity * drug.price,
-    });
-    await newSales.save();
-    await drug.updateOne({ stock: drug.stock - quantity });
-    res.json(newSales);
+    if (drug.stock < quantity) {
+      res.status(401).json("Insufficient stock!");
+    } else {
+      const newSales = new Sales({
+        id: (Math.floor(Math.random() * 100000) + 100000)
+          .toString()
+          .substring(1),
+        drug_id,
+        drug_name,
+        quantity,
+        cost,
+      });
+      await newSales.save();
+      await drug.updateOne({ stock: drug.stock - quantity });
+      res.json("Sales completed successfully");
+    }
   } catch (err) {
     res.status(500).json("Oooops! Please try again later");
     console.log(err.message);

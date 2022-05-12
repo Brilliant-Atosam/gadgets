@@ -5,6 +5,7 @@
   box-sizing: border-box;
   font-family: sans-serif;
   list-style: none;
+  text-decoration: none;
 }
 .container {
   width: 100vw;
@@ -15,6 +16,11 @@
   align-items: center;
   justify-content: center;
   flex-direction: column;
+}
+.chart {
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
 .action-btn {
   display: flex;
@@ -27,7 +33,7 @@
   cursor: pointer;
   color: #087a75;
   border: 2px solid #087a75;
-  padding: 10px;
+  padding: 7px;
   border-radius: 4px;
   box-sizing: content-box;
 }
@@ -35,6 +41,7 @@
   font-weight: 200;
   font-size: 14px;
   margin-left: 10px;
+  color: #087a75;
 }
 .icon-link {
   cursor: pointer;
@@ -103,9 +110,15 @@
   width: 5px;
 }
 ::-webkit-scrollbar-track {
-  background: white;
+  background: #30e6dd1b;
 }
 ::-webkit-scrollbar-thumb {
   background: #087a75;
   border-radius: 10px;
+}
+@media screen and (max-width: 770px) {
+  .chart {
+    overflow: scroll;
+    /* display: none; */
+  }
 }

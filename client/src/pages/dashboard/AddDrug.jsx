@@ -19,16 +19,26 @@ export default function FormDialog({ open, handleClose }) {
   const [dosage, setDosage] = useState("");
   const [price, setPrice] = useState();
   const [file, setFile] = useState();
-  const formData = new FormData();
-  const drugDetails = { name, stock, supplier, implications, dosage, price };
-  formData.append(`drug`, file);
-  console.log(formData);
-  //   formData.append("details", drugDetails);
   const handleAdd = async () => {
-    // const res = await request.post("/drugs", formData, {
-    //   headers: { "Content-Type": "multipart/form-data" },
-    // });
-    // alert(res.data);
+    const drugDetails = {
+      name,
+      stock,
+      supplier,
+      implications: implications.split(", "),
+      dosage,
+      price,
+      img: file ? name.replace(" ", "_") : undefined,
+    };
+    if (file) {
+      const formData = new FormData();
+      formData.append("name", name);
+      formData.append(`drug`, file);
+      await request.post("/upload", formData, {
+        headers: { "Content-Type": "multipart/form-data" },
+      });
+    }
+    const res = await request.post("/drugs", drugDetails);
+    alert(res.data);
   };
   return (
     <div>

@@ -4,8 +4,11 @@ import AlertComponent from "../../components/Alert";
 import { useState } from "react";
 import { request } from "../../request";
 import Loading from "../../components/Loading";
-
+import { LoginStart, LoginSuccess, LoginFailure } from "../../redux/login";
+import { useDispatch } from "react-redux";
 export const Login = () => {
+  const dispatch = useDispatch();
+
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [severity, setSeverity] = useState("info");
@@ -13,13 +16,14 @@ export const Login = () => {
   const [open, setOpen] = useState(false);
   const [loading, setLoading] = useState(false);
   const handleLogin = async () => {
-      setLoading(true)
+    setLoading(true);
     if (!email || password.length < 5) {
       setOpen(true);
       setSeverity("warning");
       setMessage("Invalid login input");
-      setLoading(false)
+      setLoading(false);
     } else {
+      dispatch(LoginStart);
       try {
         const res = await request.post("/auth", {
           email,
@@ -28,12 +32,14 @@ export const Login = () => {
         setOpen(true);
         setSeverity("success");
         setMessage(res.data);
-        setLoading(false)
+        setLoading(false);
+        dispatch(LoginSuccess(res.data));
       } catch (err) {
+        dispatch(LoginFailure());
         setOpen(true);
         setSeverity("error");
         setMessage(err.response.data);
-        setLoading(false)
+        setLoading(false);
       }
     }
   };
@@ -58,7 +64,11 @@ export const Login = () => {
         value={password}
         event={(e) => setPassword(e.target.value)}
       />
-      <button className="btn login-btn" disabled={loading} onClick={() => handleLogin()}>
+      <button
+        className="btn login-btn"
+        disabled={loading}
+        onClick={() => handleLogin()}
+      >
         {loading ? "Please wait..." : "Sign in"}
       </button>
     </div>

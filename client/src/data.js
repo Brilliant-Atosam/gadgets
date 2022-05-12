@@ -1,4 +1,4 @@
-import { Edit, Redo, CurrencyExchange, Visibility } from "@mui/icons-material";
+import { Edit, Redo, CurrencyExchange, Visibility, Restore } from "@mui/icons-material";
 
 export const drugsColumn = [
   { field: "id", headerName: "ID", width: 70 },
@@ -18,6 +18,89 @@ export const drugsColumn = [
   },
 ];
 
+export  const salesColumn = [
+  { field: "id", headerName: "ID", width: 70 },
+  { field: "drug_name", headerName: "Drug", width: 200 },
+  { field: "quantity", headerName: "Qty", width: 40 },
+  { field: "cost", headerName: "Cost", width: 130 },
+  {
+    field: "createdAt",
+    headerName: "Date",
+    width: 170,
+    renderCell: (params) => <>{params.row.createdAt}</>,
+  },
+  {
+    headerName: "Action",
+    width: 120,
+    renderCell: (params) => (
+      <div className="action-btn">
+        <Restore className="action-icon" />
+      </div>
+    ),
+  },
+];
+export const data = [
+  {
+    name: "Jan",
+    sales: 2400,
+    amt: 2400,
+  },
+  {
+    name: "Feb",
+    sales: 1398,
+    amt: 2210,
+  },
+  {
+    name: "Mar",
+    sales: 9800,
+    amt: 2290,
+  },
+  {
+    name: "Apr",
+    sales: 3908,
+    amt: 2000,
+  },
+  {
+    name: "May",
+    sales: 4800,
+    amt: 2181,
+  },
+  {
+    name: "Jun",
+    sales: 3800,
+    amt: 2500,
+  },
+  {
+    name: "Jul",
+    sales: 4300,
+    amt: 2100,
+  },
+  {
+    name: "Aug",
+    sales: 3908,
+    amt: 2000,
+  },
+  {
+    name: "Sep",
+    sales: 4800,
+    amt: 2181,
+  },
+  {
+    name: "Oct",
+    sales: 3800,
+    amt: 2500,
+  },
+  {
+    name: "Nov",
+    sales: 4300,
+    amt: 2100,
+  },
+  {
+    name: "Dec",
+    sales: 4300,
+    amt: 2100,
+  },
+];
 export const rows = [
   { id: 1, lastName: "Snow", firstName: "Jon", age: 35 },
   { id: 2, lastName: "Lannister", firstName: "Cersei", age: 42 },

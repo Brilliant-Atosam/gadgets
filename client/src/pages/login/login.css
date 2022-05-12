@@ -1,5 +1,5 @@
 .login-container {
-  height: 100vh;
+  height: calc(100vh - 60px);
   background: linear-gradient(
       rgba(48, 230, 220, 0.226) 100%,
       rgba(48, 230, 220, 0.226) 100%
