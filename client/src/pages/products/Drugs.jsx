@@ -1,19 +1,19 @@
-import "./dashboard.css";
 import {
   ArrowForwardIos,
   MedicalServices,
-  Visibility,
   Restore,
   CancelOutlined,
   CurrencyExchange,
-  RestartAlt,
+  AddPhotoAlternate,
+  Add,
+  Edit,
+  Visibility,
 } from "@mui/icons-material";
 import moment from "moment";
-import FormDialog from "./AddDrug";
+import FormDialog from "../dashboard/AddDrug";
 import { useSelector, useDispatch } from "react-redux";
 import DataTable from "../../components/Table";
 import { drugsStart, drugsSuccess, drugsFailure } from "../../redux/drugs";
-import { salesStart, salesSuccess, salesFailure } from "../../redux/sales";
 import {
   TextField,
   Button,
@@ -26,37 +26,11 @@ import {
 import { useEffect, useState } from "react";
 import { request } from "../../request";
 import { Link } from "react-router-dom";
-import QuickStat from "./QuickStat";
-import Restock from "./Restock";
-const Dashboard = () => {
+import Restock from "../dashboard/Restock";
+const Drugs = () => {
   const dispatch = useDispatch();
   const allDrugs = useSelector((state) => state.drugs.Drugs);
-  const allSales = useSelector((state) => state.sales.Sales);
   const [drugs, setDrugs] = useState(allDrugs);
-  const [sales, setSales] = useState(allSales);
-  const [drugsNum, setDrugsNum] = useState(drugs.length);
-  const salesToday = sales?.filter(
-    (sale) => sale.createdAt === moment().format("DD-MM-YYYY")
-  );
-  let salesTodayFigures = [];
-  salesToday?.forEach((sale) => salesTodayFigures.push(sale.cost));
-
-  const [dailySales, setDailySales] = useState(
-    salesTodayFigures.length > 0 ? salesTodayFigures.reduce((a, b) => a + b) : 0
-  );
-
-  const salesMonth = sales?.filter((sale) =>
-    sale?.createdAt?.indexOf(moment().format("-MM-YYYY") > -1)
-  );
-  let monthlySalesFigures = [];
-  salesMonth?.forEach((sale) => monthlySalesFigures.push(sale.cost));
-
-  const [monthlySales, setMonthlySales] = useState(
-    monthlySalesFigures.length > 0
-      ? monthlySalesFigures.reduce((a, b) => a + b)
-      : 0
-  );
-  console.log(monthlySales);
   const [openDial, setOpenDial] = useState(false);
   const [openSell, setOpenSell] = useState(false);
   const [openStock, setOpenStock] = useState(false);
@@ -65,7 +39,40 @@ const Dashboard = () => {
   const [stock, setStock] = useState();
   const [price, setPrice] = useState();
   const [id, setId] = useState("");
-
+  const [supplier, setSupplier] = useState("");
+  const [implications, setImplications] = useState("");
+  const [dosage, setDosage] = useState("");
+  const [file, setFile] = useState();
+  //   ADD DRUG
+  const handleAdd = async () => {
+    const drugDetails = {
+      name,
+      stock,
+      supplier,
+      implications: implications.split(", "),
+      dosage,
+      price,
+      img: file ? name.replace(" ", "_") : undefined,
+    };
+    if (file) {
+      const formData = new FormData();
+      formData.append("name", name);
+      formData.append(`drug`, file);
+      await request.post("/upload", formData, {
+        headers: { "Content-Type": "multipart/form-data" },
+      });
+    }
+    const res = await request.post("/drugs", drugDetails);
+    setName("");
+    setStock("");
+    setPrice("");
+    setSupplier("");
+    setImplications("");
+    setDosage("");
+    setFile("");
+    alert(res.data);
+  };
+  //   SELL DRUG
   const sellDrug = async () => {
     const salesDetails = {
       drug_name: name,
@@ -76,9 +83,6 @@ const Dashboard = () => {
       id: (Math.floor(Math.random() * 100000) + 100000).toString().substring(1),
     };
     const res = await request.post("/sales", salesDetails);
-    setSales([...sales, salesDetails]);
-    setDailySales(dailySales + salesDetails.cost);
-    setMonthlySales(monthlySales + salesDetails.cost);
     alert(res.data);
   };
   const handleClose = () => {
@@ -87,28 +91,24 @@ const Dashboard = () => {
 
   useEffect(() => {
     dispatch(drugsStart);
-    dispatch(salesStart);
     try {
       const fetchData = async () => {
         const drugs = await request.get("/drugs");
         dispatch(drugsSuccess(drugs.data));
-        const sales = await request.get("/sales");
-        dispatch(salesSuccess(sales.data));
       };
       fetchData();
     } catch (err) {
       dispatch(drugsFailure(err.response.data));
-      dispatch(salesFailure(err.response.data));
     }
   }, [dispatch]);
   const drugsColumn = [
     { field: "id", headerName: "ID", width: 70 },
-    { field: "name", headerName: "Drug", width: 130 },
+    { field: "name", headerName: "Drugs name", width: 230 },
     { field: "stock", headerName: "Stock", width: 130 },
     { field: "price", headerName: "Price", width: 130 },
     {
       headerName: "Action",
-      width: 150,
+      width: 200,
       renderCell: (params) => (
         <div className="action-btn">
           <Visibility
@@ -125,7 +125,7 @@ const Dashboard = () => {
               setStock(params.row.stock);
             }}
           />
-          <RestartAlt
+          <Restore
             className="action-icon mr10"
             onClick={() => {
               setName(params.row.name);
@@ -134,27 +134,6 @@ const Dashboard = () => {
               handleRestock = { handleRestock };
             }}
           />
-        </div>
-      ),
-    },
-  ];
-  const salesColumn = [
-    { field: "id", headerName: "ID", width: 70 },
-    { field: "drug_name", headerName: "Drug", width: 200 },
-    { field: "quantity", headerName: "Qty", width: 40 },
-    { field: "cost", headerName: "Cost", width: 130 },
-    {
-      field: "createdAt",
-      headerName: "Date",
-      width: 170,
-      renderCell: (params) => <>{params.row.createdAt}</>,
-    },
-    {
-      headerName: "Action",
-      width: 120,
-      renderCell: (params) => (
-        <div className="action-btn">
-          <Restore className="action-icon" />
         </div>
       ),
     },
@@ -209,41 +188,107 @@ const Dashboard = () => {
       </Dialog>
       <div className="dashboard-container">
         <div className="dash-left">
-          <QuickStat
-            drugsNum={drugsNum}
-            outStock={drugs.filter((drug) => drug.stock < 1).length}
-            dailySales={dailySales}
-            monthlySales={monthlySales}
-          />
-
-          <div className="drugs-container">
-            <div className="drugs-top">
-              <h1 className="heading">Drugs</h1>
-              <div className="head-links">
-                <MedicalServices
-                  className="icon-link mr10"
-                  onClick={() => setOpenDial(true)}
+          <div className="drugs-container drugs-page">
+            <div className="add-drug-form">
+              <h1 className="heading">Add new drug</h1>
+              <TextField
+                autoFocus
+                margin="dense"
+                label="Drug name"
+                type="text"
+                fullWidth
+                variant="outlined"
+                className="dial-input"
+                onChange={(e) => setName(e.target.value)}
+              />
+              <TextField
+                margin="dense"
+                label="stock"
+                type="number"
+                fullWidth
+                variant="outlined"
+                className="dial-input"
+                onChange={(e) => setStock(e.target.value)}
+              />
+              <TextField
+                margin="dense"
+                label="Supplier"
+                type="text"
+                fullWidth
+                variant="outlined"
+                className="dial-input"
+                onChange={(e) => setSupplier(e.target.value)}
+              />
+              <TextField
+                margin="dense"
+                onChange={(e) => setImplications(e.target.value)}
+                label="Implications"
+                type="text"
+                value={implications}
+                fullWidth
+                variant="outlined"
+                className="dial-input"
+              />
+              <TextField
+                margin="dense"
+                onChange={(e) => setPrice(e.target.value)}
+                label="Price"
+                type="number"
+                fullWidth
+                variant="outlined"
+                className="dial-input"
+              />
+              <TextField
+                margin="dense"
+                label="Dosage"
+                type="text"
+                fullWidth
+                variant="outlined"
+                value={dosage}
+                onChange={(e) => setDosage(e.target.value)}
+                className="dial-input"
+              />
+              <label htmlFor="drug-img">
+                <AddPhotoAlternate className="file-picker" />
+              </label>
+              <TextField
+                margin="dense"
+                id="drug-img"
+                type="file"
+                accept=".png, .jpg, .jpeg"
+                onChange={(e) => setFile(e.target.files[0])}
+              />
+              {file && (
+                <img
+                  alt={name}
+                  className="img-preview"
+                  src={URL.createObjectURL(file)}
                 />
-                <Link to="/drugs">
-                  <ArrowForwardIos className="icon-link" />
-                </Link>
-              </div>
+              )}
+              <button className="btn add-drug-btn" onClick={() => handleAdd()}>
+                <Add className="mr10" /> Add
+              </button>
             </div>
-            <DataTable rows={drugs} columns={drugsColumn} />
           </div>
         </div>
         <div className="dash-right chart">
-          <div className="sales-top">
-            <h1 className="heading">Sales</h1>
-            <Link to="/sales">
-              <ArrowForwardIos className="icon-link" />
-            </Link>
+          <div className="drugs-top">
+            <h1 className="heading">Drugs</h1>
+            <div className="head-links">
+              <MedicalServices
+                className="icon-link mr10"
+                onClick={() => setOpenDial(true)}
+              />
+              <Link to="/drugs">
+                <ArrowForwardIos className="icon-link" />
+              </Link>
+            </div>
           </div>
-          <DataTable rows={sales} columns={salesColumn} />
+          <DataTable rows={drugs} columns={drugsColumn} />
         </div>
       </div>
     </>
   );
 };
 
-export default Dashboard;
+export default Drugs;

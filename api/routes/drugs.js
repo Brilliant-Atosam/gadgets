@@ -10,17 +10,6 @@ router.get("/", async (req, res) => {
     res.status(500).json(err.message);
   }
 });
-// GET SINGLE DRUG
-router.get("/:id", async (req, res) => {
-  try {
-    const drug = await Drug.findOne({ id: req.params.id });
-    drug
-      ? res.json(drug)
-      : res.status(404).json(`Drug with id '${req.params.id}' not found.`);
-  } catch (err) {
-    res.status(500).json("Oooops! Please try again.");
-  }
-});
 // ADD
 router.post("/", async (req, res) => {
   const { name, stock, supplier, dosage, implications, price, img } = req.body;
@@ -48,7 +37,7 @@ router.post("/", async (req, res) => {
 router.put("/:id", async (req, res) => {
   try {
     const drug = await Drug.findOne({ id: req.params.id });
-    await drug.updateOne({ $set: req.body }, { new: true });
+    await drug.updateOne({ $set: req.body });
     res.json("Updated successfully");
   } catch (err) {
     res.status(500).json("Oooops! Try again");

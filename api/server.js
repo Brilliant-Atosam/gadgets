@@ -1,4 +1,3 @@
-const { json } = require("express");
 const mongoose = require("mongoose");
 const cors = require("cors");
 const express = require("express");
@@ -6,9 +5,7 @@ const bcrypt = require("bcryptjs");
 const multer = require("multer");
 const path = require("path");
 const server = express();
-const moment = require("moment");
 const router = require("./routes/auth");
-console.log(moment().format("-yyyy"));
 require("dotenv").config();
 // DB CONNECTION
 mongoose.connect(process.env.DB_CONNECTION_STRING, (err) => {
@@ -23,7 +20,10 @@ server.use(cors());
 const storage = multer.diskStorage({
   destination: "./public/drugs",
   filename: (req, file, cb) => {
-    cb(null, req.body?.name?.replace(" ", "_") + path.extname(file.originalname));
+    cb(
+      null,
+      req.body?.name?.replace(" ", "_") + path.extname(file.originalname)
+    );
   },
 });
 const uploadDrug = multer({
@@ -31,9 +31,6 @@ const uploadDrug = multer({
 }).single("drug");
 server.post("/upload", uploadDrug, async (req, res) => res.status(200));
 // routes
-server.get("/", (req, res) => {
-  res.send("Hello Philomina Fosua");
-});
 server.use("/auth", require("./routes/auth"));
 server.use("/drugs", require("./routes/drugs"));
 server.use("/sales", require("./routes/sales"));

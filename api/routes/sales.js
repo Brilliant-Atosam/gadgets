@@ -7,11 +7,6 @@ router.get("/", async (req, res) => {
   const sales = await Sales.find();
   res.json(sales);
 });
-router.get("/:drug_id", async (req, res) => {
-  const { drug_id } = req.params;
-  const sales = await Sales.find({ drug_id });
-  res.json(sales);
-});
 // ADD SALES
 router.post("/", async (req, res) => {
   const { drug_id, drug_name, quantity, cost, time } = req.body;
@@ -39,8 +34,4 @@ router.post("/", async (req, res) => {
     console.log(err.message);
   }
 });
-
-// REVERSE SALES
-router.delete("/:id", async (req, res) => {});
-
 module.exports = router;

@@ -1,11 +1,19 @@
 import "./navbar.css";
-import { Logout, Menu } from "@mui/icons-material";
+import { Menu, TrendingUp } from "@mui/icons-material";
+import LogoutSharp from "@mui/icons-material/Logout";
 import { useState } from "react";
 import { Link } from "react-router-dom";
+import { Logout } from "../../redux/login";
+import { useDispatch } from "react-redux";
+
 const Navbar = () => {
+  const dispatch = useDispatch();
   const [showMenu, setShowMenu] = useState(false);
   const toggle = () => {
     setShowMenu(!showMenu);
+  };
+  const handleLogout = () => {
+    dispatch(Logout());
   };
   return (
     <div className="navbar-container">
@@ -17,13 +25,22 @@ const Navbar = () => {
       <div className="nav-right">
         <div className="menu-list">
           <Link to="/drugs">
-            <li className="menu-item">Drugs</li>
+            <li className="menu-item">
+              Drugs <i class="fa-solid fa-pills"></i>
+            </li>
           </Link>
           <Link to="/sales">
-            <li className="menu-item">Sales</li>
+            <li className="menu-item">
+              Sales <TrendingUp />
+            </li>
           </Link>
-          <li className="menu-item sign-out btn">
-            Sign out <Logout className="ml5" />
+          <Link to="/sales">
+            <li className="menu-item">
+              Tutorials <i class="fa-solid fa-chalkboard"></i>
+            </li>
+          </Link>
+          <li className="menu-item sign-out btn" onClick={() => handleLogout()}>
+            Sign out <LogoutSharp className="ml5" />
           </li>
         </div>
         <div className={showMenu ? "menu-list-mb" : "no-show"}>

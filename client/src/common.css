@@ -17,11 +17,7 @@
   justify-content: center;
   flex-direction: column;
 }
-.chart {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-}
+
 .action-btn {
   display: flex;
   align-items: center;
@@ -65,6 +61,25 @@
 }
 .mr10 {
   margin-right: 10px;
+}
+.mb20 {
+  margin-bottom: 20px;
+}
+.drugs-page {
+  height: fit-content !important;
+}
+.add-drug-form {
+  width: 100%;
+  height: fit-content;
+  padding: 20px;
+}
+.add-drug-btn {
+  background: #087a75;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  color: white;
 }
 .dial-icon {
   font-size: 40px !important;

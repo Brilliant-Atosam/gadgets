@@ -2,20 +2,6 @@ import React, { useEffect, useState } from "react";
 import moment from "moment";
 import { useSelector } from "react-redux";
 const QuickStat = ({ drugsNum, outStock, dailySales, monthlySales }) => {
-  // const drugs = useSelector((state) => state.drugs.Drugs);
-  // const sales = useSelector((state) => state.sales.Sales);
-  // const salesToday = sales.filter(
-  //   (sale) => sale.createdAt === moment().format("DD-MM-YYYY")
-  // );
-  // let salesTodayFigures = [];
-  // salesToday.forEach((sale) => salesTodayFigures.push(sale.cost));
-
-  // // const monthlySales = sales.filter((sale) =>
-  //   sale.createdAt.indexOf(moment().format("-MM-YYYY") > 0)
-  // );
-  // let monthlySalesFigure = [];
-  // monthlySales.forEach((sale) => monthlySalesFigure.push(sale.cost));
-  // console.log(salesTodayFigures.reduce((a, b) => a + b));
   return (
     <div className="quick-stat">
       <h1 className="heading">Quick Stat</h1>

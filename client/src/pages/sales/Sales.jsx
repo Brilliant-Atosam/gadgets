@@ -1,5 +1,5 @@
 import DataTable from "../../components/Table";
-import { data } from "../../data";
+import { data, salesColumn } from "../../data";
 import {
   Area,
   AreaChart,
@@ -8,61 +8,66 @@ import {
   XAxis,
   YAxis,
 } from "recharts";
-import { useEffect, useState } from "react";
-import { request } from "../../request";
+import moment from "moment";
 import { useSelector } from "react-redux";
-import { useParams } from "react-router-dom";
+import QuickStat from "./QuickStat";
 const Sales = () => {
-  const { id } = useParams();
   const salesRecords = useSelector((state) => state.sales.Sales);
-  const drugSales = salesRecords.filter((sale) => sale.drug_id === id);
-  const [sales, setSales] = useState(drugSales);
-  const [overallSales, setOverallSales] = useState(0);
-  const salesColumn = [
-    { field: "drug_name", headerName: "Drug", width: 200 },
-    { field: "quantity", headerName: "Qty", width: 40 },
-    { field: "cost", headerName: "Cost", width: 130 },
-    {
-      field: "createdAt",
-      headerName: "Date",
-      width: 170,
-      renderCell: (params) => <>{params.row.createdAt}</>,
-    },
-    { field: "id", headerName: "ID", width: 70 },
-  ];
-
+  const dailySales = salesRecords?.filter(
+    (sale) => sale.createdAt === moment().format("DD-MM-YYYY")
+  );
+  const dailySalesFigure =
+    dailySales.length > 1
+      ? dailySales.reduce((a, b) => a.cost + b.cost)
+      : dailySales.length === 1
+      ? dailySales[0].cost
+      : 0;
+  const salesMonth = salesRecords?.filter((sale) =>
+    sale?.createdAt?.indexOf(moment().format("-MM-YYYY") > -1)
+  );
+  const monthlySalesFigure =
+    salesRecords.length > 1
+      ? salesMonth.reduce((a, b) => a.cost + b.cost)
+      : salesMonth.length === 1
+      ? salesMonth[0].cost
+      : 0;
+  const salesYear = salesRecords?.filter((sale) =>
+    sale?.createdAt?.indexOf(moment().format("-YYYY") > -1)
+  );
+  const annualSalesFigure =
+    salesRecords.length > 1
+      ? salesYear.reduce((a, b) => a.cost + b.cost)
+      : salesYear.length === 1
+      ? salesYear[0].cost
+      : 0;
+  const totalSalesFigure =
+    salesRecords.length > 1
+      ? salesRecords.reduce((a, b) => a.cost + b.cost)
+      : salesRecords.length === 1
+      ? salesRecords[0].cost
+      : 0;
   return (
     <div className="dashboard-container">
       <div className="dash-left">
-        <div className="quick-stat">
-          <h1 className="heading">Sales Overview</h1>
-          <div className="quick-stat-container">
-            <div className="quick-stat-item">
-              <span className="number">$200</span>
-              <span className="desc">sale today</span>
-            </div>
-            <div className="quick-stat-item">
-              <span className="number">$700</span>
-              <span className="desc">This month</span>
-            </div>
-            <div className="quick-stat-item">
-              <span className="number">$700</span>
-              <span className="desc">This year</span>
-            </div>
-            <div className="quick-stat-item">
-              <span className="number">&#8373;{overallSales}.00</span>
-              <span className="desc">Overall sales</span>
-            </div>
-          </div>
-        </div>
+        <QuickStat
+          dailySales={dailySalesFigure}
+          monthlySales={monthlySalesFigure}
+          annualSales={annualSalesFigure}
+          overallSales={totalSalesFigure}
+        />
         <div className="drugs-container">
           <div className="drugs-top">
-            <h1 className="heading">Sales History</h1>
+            <h1 className="heading">
+              Sales History as at <b>{moment().format("dddd DD-MM-yy")}</b>
+            </h1>
           </div>
-          {<DataTable rows={sales} columns={salesColumn} />}
+          {<DataTable rows={salesRecords} columns={salesColumn} />}
         </div>
       </div>
       <div className="dash-right chart">
+        <div className="dash-right-top">
+          <h1 className="heading mb20">Annual Sales Performance Area Chart for {moment().format('yyyy')}</h1>
+        </div>
         <AreaChart
           width={850}
           height={400}
