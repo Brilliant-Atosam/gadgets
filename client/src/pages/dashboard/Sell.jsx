@@ -8,11 +8,7 @@ import {
   DialogContentText,
   DialogTitle,
 } from "@mui/material";
-import {
-  CancelOutlined,
-  CurrencyExchange,
-} from "@mui/icons-material";
-import { request } from "../../request";
+import { CancelOutlined, CurrencyExchange } from "@mui/icons-material";
 
 export default function SellDial({
   open,
@@ -20,8 +16,10 @@ export default function SellDial({
   drugName,
   stock,
   price,
+  event,
+  quantity,
+  handleSellDrug
 }) {
-  const [quantity, setQuantity] = useState(0);
   return (
     <div>
       <Dialog open={open} onClose={handleClose}>
@@ -36,19 +34,19 @@ export default function SellDial({
             fullWidth
             variant="outlined"
             className="dial-input"
-            onChange={(e) => setQuantity(e.target.value)}
+            onChange={event}
           />
           <DialogContentText>Stock: {stock}</DialogContentText>
-          <DialogContentText>Price: {price}</DialogContentText>
+          <DialogContentText>Price: &#8373;{price}</DialogContentText>
           <DialogContentText>
-            Total cost: <b>{price * quantity}</b>
+            Total cost: <b>&#8373;{price * quantity}</b>
           </DialogContentText>
         </DialogContent>
         <DialogActions>
           <Button onClick={handleClose}>
             <CancelOutlined className="dial-icon cancel" />
           </Button>
-          <Button onClick={() => alert()}>
+          <Button onClick={handleSellDrug}>
             <CurrencyExchange className="dial-icon" />
           </Button>
         </DialogActions>

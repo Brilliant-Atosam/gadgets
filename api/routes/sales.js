@@ -10,7 +10,7 @@ router.get("/", async (req, res) => {
 // ADD SALES
 router.post("/", async (req, res) => {
   const { drug_id, drug_name, quantity, cost, time } = req.body;
-
+  console.log(req.body);
   try {
     const drug = await Drug.findOne({ id: drug_id });
     if (drug.stock < quantity) {

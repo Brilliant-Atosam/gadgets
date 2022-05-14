@@ -46,7 +46,6 @@ router.put("/:id", async (req, res) => {
 });
 // RESTOCK DRUG
 router.put("/restock/:id", async (req, res) => {
-  console.log(req.body);
   try {
     await Drug.findOneAndUpdate(
       { id: req.params.id },

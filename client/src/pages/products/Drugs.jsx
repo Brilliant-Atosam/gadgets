@@ -8,6 +8,8 @@ import {
   Add,
   Edit,
   Visibility,
+  Close,
+  Search,
 } from "@mui/icons-material";
 import moment from "moment";
 import FormDialog from "../dashboard/AddDrug";
@@ -31,6 +33,7 @@ const Drugs = () => {
   const dispatch = useDispatch();
   const allDrugs = useSelector((state) => state.drugs.Drugs);
   const [drugs, setDrugs] = useState(allDrugs);
+  const [search, setSearch] = useState("");
   const [openDial, setOpenDial] = useState(false);
   const [openSell, setOpenSell] = useState(false);
   const [openStock, setOpenStock] = useState(false);
@@ -272,6 +275,34 @@ const Drugs = () => {
           </div>
         </div>
         <div className="dash-right chart">
+          <div className="nav-center">
+            <input
+              type="text"
+              placeholder="Search drug"
+              className="search-input"
+              onChange={(e) => {
+                setSearch(e.target.value);
+                setDrugs(
+                  allDrugs.filter(
+                    (drug) => drug.name.indexOf(e.target.value) > -1
+                  )
+                );
+              }}
+              value={search}
+            />
+            <div className="search-icons">
+              {search && (
+                <Close
+                  className="search-icon"
+                  onClick={() => {
+                    setSearch("");
+                    setDrugs(allDrugs);
+                  }}
+                />
+              )}
+              <Search className="search-icon" />
+            </div>
+          </div>
           <div className="drugs-top">
             <h1 className="heading">Drugs</h1>
             <div className="head-links">

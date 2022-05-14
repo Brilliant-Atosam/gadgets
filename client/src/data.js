@@ -1,4 +1,10 @@
-import { Edit, Redo, CurrencyExchange, Visibility, Restore } from "@mui/icons-material";
+import {
+  Edit,
+  Redo,
+  CurrencyExchange,
+  Visibility,
+  Restore,
+} from "@mui/icons-material";
 
 export const drugsColumn = [
   { field: "id", headerName: "ID", width: 70 },
@@ -18,26 +24,16 @@ export const drugsColumn = [
   },
 ];
 
-export  const salesColumn = [
+export const salesColumn = [
   { field: "id", headerName: "ID", width: 70 },
-  { field: "drug_name", headerName: "Drug", width: 200 },
-  { field: "quantity", headerName: "Qty", width: 40 },
-  { field: "cost", headerName: "Cost", width: 130 },
   {
     field: "createdAt",
     headerName: "Date",
     width: 170,
     renderCell: (params) => <>{params.row.createdAt}</>,
   },
-  {
-    headerName: "Action",
-    width: 120,
-    renderCell: (params) => (
-      <div className="action-btn">
-        <Restore className="action-icon" />
-      </div>
-    ),
-  },
+  { field: "quantity", headerName: "Qty", width: 40 },
+  { field: "cost", headerName: "Cost", width: 130 },
 ];
 export const data = [
   {

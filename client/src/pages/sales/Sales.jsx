@@ -66,7 +66,9 @@ const Sales = () => {
       </div>
       <div className="dash-right chart">
         <div className="dash-right-top">
-          <h1 className="heading mb20">Annual Sales Performance Area Chart for {moment().format('yyyy')}</h1>
+          <h1 className="heading mb20">
+            Annual Sales Performance Area Chart for {moment().format("yyyy")}
+          </h1>
         </div>
         <AreaChart
           width={850}

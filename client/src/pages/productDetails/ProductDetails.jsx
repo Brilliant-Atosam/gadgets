@@ -1,4 +1,9 @@
-import { Delete, Edit, Repeat, RestartAlt } from "@mui/icons-material";
+import {
+  CurrencyExchange,
+  Delete,
+  Edit,
+  RestartAlt,
+} from "@mui/icons-material";
 import { useSelector } from "react-redux";
 import { useParams } from "react-router-dom";
 import DataTable from "../../components/Table";
@@ -18,6 +23,8 @@ import { data } from "../../data";
 import FormDialog from "./EditDrug";
 import { useState } from "react";
 import ResponsiveDialog from "../../components/Dialog";
+import AlertComponent from "../../components/Alert";
+import SellDial from "../dashboard/Sell";
 const ProductDetails = () => {
   const { id } = useParams();
   const drug = useSelector((state) =>
@@ -27,7 +34,7 @@ const ProductDetails = () => {
   const salesHistory = useSelector((state) =>
     state.sales.Sales.filter((sale) => sale.drug_id === id)
   );
-  const totalSalesFigure =
+  let totalSalesFigure =
     salesHistory.length > 1
       ? salesHistory.reduce((a, b) => a.cost + b.cost)
       : salesHistory.length === 1
@@ -36,7 +43,7 @@ const ProductDetails = () => {
   const salesToday = salesHistory?.filter(
     (sale) => sale.createdAt === moment().format("DD-MM-YYYY")
   );
-  const dailySalesFigure =
+  let dailySalesFigure =
     salesHistory.length > 1
       ? salesToday.reduce((a, b) => a.cost + b.cost)
       : salesToday.length === 1
@@ -45,16 +52,16 @@ const ProductDetails = () => {
   const salesMonth = salesHistory?.filter((sale) =>
     sale?.createdAt?.indexOf(moment().format("-MM-YYYY") > -1)
   );
-  const monthlySalesFigure =
+  let monthlySalesFigure =
     salesHistory.length > 1
       ? salesMonth.reduce((a, b) => a.cost + b.cost)
       : salesMonth.length === 1
       ? salesMonth[0].cost
       : 0;
-  const salesYear = salesHistory?.filter((sale) =>
+  let salesYear = salesHistory?.filter((sale) =>
     sale?.createdAt?.indexOf(moment().format("-YYYY") > -1)
   );
-  const annualSalesFigure =
+  let annualSalesFigure =
     salesHistory.length > 1
       ? salesYear.reduce((a, b) => a.cost + b.cost)
       : salesYear.length === 1
@@ -71,8 +78,55 @@ const ProductDetails = () => {
   const [openDial, setOpenDial] = useState(false);
   const [content, setContent] = useState("Okay");
   const [dialTitle, setDialTitle] = useState("Ok");
+  // OPEN SELL DIAL
+  const [openSell, setOpenSell] = useState(false);
+  const [quantity, setQuantity] = useState(0);
+  // ALERT INFO
+  const [openAlert, setOpenAlert] = useState(false);
+  const [severity, setSeverity] = useState("success");
+  const [message, setMessage] = useState("");
+  // SELL DRUG
+  const handleSellDrug = async () => {
+    if (!quantity || quantity < 1) {
+      setSeverity("error");
+      setMessage("Enter valid quantity");
+      setOpenAlert(true);
+    } else {
+      const salesDetails = {
+        drug_name: drug.name,
+        drug_id: id,
+        cost: drug.price * quantity,
+        quantity,
+        date: moment().format("DD-MM-YYYY"),
+        id: (Math.floor(Math.random() * 100000) + 100000)
+          .toString()
+          .substring(1),
+      };
+      try {
+        const res = await request.post("/sales", salesDetails);
+        setQuantity(0);
+        setMessage(res.data);
+        setOpenAlert(true);
+        dailySalesFigure = dailySalesFigure + salesDetails.cost;
+        monthlySalesFigure = monthlySalesFigure + salesDetails.cost;
+        annualSalesFigure = annualSalesFigure + salesDetails.cost;
+        totalSalesFigure = totalSalesFigure + salesDetails.cost;
+      } catch (err) {
+        setOpenAlert(true);
+        setMessage(err.response.data);
+        setSeverity("error");
+      }
+      setOpenSell(false);
+    }
+  };
   return (
     <>
+      <AlertComponent
+        open={openAlert}
+        severity={severity}
+        message={message}
+        close={() => setOpenAlert(false)}
+      />
       <ResponsiveDialog
         open={openDial}
         DialContent={`If you proceed with this action, ${drug.name} will be deleted.`}
@@ -83,6 +137,16 @@ const ProductDetails = () => {
         event={() => deleteDrug()}
       />
       <FormDialog open={openEdit} handleClose={() => setOpenEdit(false)} />
+      <SellDial
+        open={openSell}
+        drugName={drug.name}
+        stock={drug.stock}
+        price={drug.price}
+        handleClose={() => setOpenSell(false)}
+        quantity={quantity}
+        event={(e) => setQuantity(e.target.value)}
+        handleSellDrug={() => handleSellDrug()}
+      />
       <div className="dashboard-container">
         <div className="dash-left">
           <QuickStat
@@ -95,6 +159,10 @@ const ProductDetails = () => {
             <div className="drugs-top">
               <h1 className="heading">Drug Sales history</h1>
               <div className="head-links">
+                <CurrencyExchange
+                  className="icon-link mr10"
+                  onClick={() => setOpenSell(true)}
+                />
                 <RestartAlt className="icon-link mr10" />
                 <Edit className="icon-link" onClick={() => setOpenEdit(true)} />
                 <Delete
@@ -112,6 +180,10 @@ const ProductDetails = () => {
           <div className="dash-right-drug-info mb20">
             <div className="drug-info-top">
               <h1 className="heading">Drug Details</h1>
+              <button className="btn" onClick={() => setOpenSell(true)}>
+                Sell
+                <CurrencyExchange className="icon-link" />
+              </button>
             </div>
             <div className="drug-info-content">
               <div className="drug-info-left">
@@ -145,7 +217,7 @@ const ProductDetails = () => {
           <div className="chart">
             <div className="dash-right-top">
               <h1 className="heading mb20">
-                Annual Sales Performance Area Chart of {drug.name} in 
+                Annual Sales Performance Area Chart of {drug.name} in
                 {moment().format("yyyy")}
               </h1>
             </div>

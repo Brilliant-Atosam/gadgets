@@ -7,6 +7,8 @@ import {
   CancelOutlined,
   CurrencyExchange,
   RestartAlt,
+  Search,
+  Close,
 } from "@mui/icons-material";
 import moment from "moment";
 import FormDialog from "./AddDrug";
@@ -28,10 +30,12 @@ import { request } from "../../request";
 import { Link } from "react-router-dom";
 import QuickStat from "./QuickStat";
 import Restock from "./Restock";
+import AlertComponent from "../../components/Alert";
 const Dashboard = () => {
   const dispatch = useDispatch();
   const allDrugs = useSelector((state) => state.drugs.Drugs);
   const allSales = useSelector((state) => state.sales.Sales);
+  const [search, setSearch] = useState("");
   const [drugs, setDrugs] = useState(allDrugs);
   const [sales, setSales] = useState(allSales);
   const [drugsNum, setDrugsNum] = useState(drugs.length);
@@ -56,7 +60,6 @@ const Dashboard = () => {
       ? monthlySalesFigures.reduce((a, b) => a + b)
       : 0
   );
-  console.log(monthlySales);
   const [openDial, setOpenDial] = useState(false);
   const [openSell, setOpenSell] = useState(false);
   const [openStock, setOpenStock] = useState(false);
@@ -65,21 +68,40 @@ const Dashboard = () => {
   const [stock, setStock] = useState();
   const [price, setPrice] = useState();
   const [id, setId] = useState("");
-
+  const [openAlert, setOpenAlert] = useState(false);
+  const [severity, setSeverity] = useState("success");
+  const [message, setMessage] = useState("");
   const sellDrug = async () => {
-    const salesDetails = {
-      drug_name: name,
-      drug_id: id,
-      cost: price * quantity,
-      quantity,
-      date: moment().format("DD-MM-YYYY"),
-      id: (Math.floor(Math.random() * 100000) + 100000).toString().substring(1),
-    };
-    const res = await request.post("/sales", salesDetails);
-    setSales([...sales, salesDetails]);
-    setDailySales(dailySales + salesDetails.cost);
-    setMonthlySales(monthlySales + salesDetails.cost);
-    alert(res.data);
+    if (!quantity || quantity < 1) {
+      setSeverity("error");
+      setMessage("Enter valid quantity");
+      setOpenAlert(true);
+    } else {
+      const salesDetails = {
+        drug_name: name,
+        drug_id: id,
+        cost: price * quantity,
+        quantity,
+        date: moment().format("DD-MM-YYYY"),
+        id: (Math.floor(Math.random() * 100000) + 100000)
+          .toString()
+          .substring(1),
+      };
+      try {
+        const res = await request.post("/sales", salesDetails);
+        setQuantity(0);
+        setSales([...sales, salesDetails]);
+        setDailySales(dailySales + salesDetails.cost);
+        setMonthlySales(monthlySales + salesDetails.cost);
+        setMessage(res.data);
+        setOpenAlert(true);
+      } catch (err) {
+        setOpenAlert(true);
+        setMessage(err.response.data);
+        setSeverity("error");
+      }
+      setOpenSell(false);
+    }
   };
   const handleClose = () => {
     setOpenDial(false);
@@ -102,10 +124,7 @@ const Dashboard = () => {
     }
   }, [dispatch]);
   const drugsColumn = [
-    { field: "id", headerName: "ID", width: 70 },
-    { field: "name", headerName: "Drug", width: 130 },
-    { field: "stock", headerName: "Stock", width: 130 },
-    { field: "price", headerName: "Price", width: 130 },
+    { field: "name", headerName: "Drug", width: 200 },
     {
       headerName: "Action",
       width: 150,
@@ -131,12 +150,14 @@ const Dashboard = () => {
               setName(params.row.name);
               setId(params.row.id);
               setOpenStock(true);
-              handleRestock = { handleRestock };
             }}
           />
         </div>
       ),
     },
+    { field: "price", headerName: "Price", width: 100 },
+    { field: "stock", headerName: "Stock", width: 130 },
+    { field: "id", headerName: "ID", width: 70 },
   ];
   const salesColumn = [
     { field: "id", headerName: "ID", width: 70 },
@@ -160,23 +181,43 @@ const Dashboard = () => {
     },
   ];
   const handleRestock = async () => {
-    try {
-      const res = await request.put("/drugs/restock/" + id, { stock });
-      alert(res.data);
+    if (!stock || stock < 1) {
+      setSeverity("warning");
+      setMessage("Enter valid stock number");
+      setOpenAlert(true);
+    } else {
+      try {
+        const res = await request.put("/drugs/restock/" + id, { stock });
+        setMessage(res.data);
+        setOpenStock(false);
+        setStock(0);
+        setMessage(res.data);
+        setSeverity("success");
+      } catch (err) {
+        setMessage(err.response.data);
+        setSeverity("error");
+      }
+      setOpenAlert(true);
       setOpenStock(false);
-      setStock(0);
-      window.location.reload();
-      window.location.reload();
-    } catch (err) {}
+    }
   };
   return (
     <>
+      <AlertComponent
+        open={openAlert}
+        severity={severity}
+        message={message}
+        close={() => {
+          window.location.reload();
+        }}
+      />
       <FormDialog open={openDial} handleClose={handleClose} />
       <Restock
         openStock={openStock}
         handleClose={() => setOpenStock(false)}
         name={name}
-        restockEvent={handleRestock}
+        restockEvent={(e) => setStock(e.target.value)}
+        handleRestock={() => handleRestock()}
       />
       <Dialog open={openSell} onClose={() => setOpenSell(false)}>
         <DialogTitle className="dial-heading">SELL DRUG</DialogTitle>
@@ -217,6 +258,34 @@ const Dashboard = () => {
           />
 
           <div className="drugs-container">
+            <div className="nav-center">
+              <input
+                type="text"
+                placeholder="Search drug"
+                className="search-input"
+                onChange={(e) => {
+                  setSearch(e.target.value);
+                  setDrugs(
+                    allDrugs.filter(
+                      (drug) => drug.name.indexOf(e.target.value) > -1
+                    )
+                  );
+                }}
+                value={search}
+              />
+              <div className="search-icons">
+                {search && (
+                  <Close
+                    className="search-icon"
+                    onClick={() => {
+                      setSearch("");
+                      setDrugs(allDrugs);
+                    }}
+                  />
+                )}
+                <Search className="search-icon" />
+              </div>
+            </div>
             <div className="drugs-top">
               <h1 className="heading">Drugs</h1>
               <div className="head-links">

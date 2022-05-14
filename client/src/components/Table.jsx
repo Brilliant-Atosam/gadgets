@@ -6,7 +6,7 @@ export default function DataTable({ rows, columns }) {
         rows={rows}
         columns={columns}
         pageSize={8}
-        rowsPerPageOptions={[5]}
+        rowsPerPageOptions={[8]}
       />
     </div>
   );

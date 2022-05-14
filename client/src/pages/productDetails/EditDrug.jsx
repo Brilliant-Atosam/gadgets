@@ -12,14 +12,13 @@ import { AddPhotoAlternate, CancelOutlined, Check } from "@mui/icons-material";
 import { request } from "../../request";
 import { useParams } from "react-router-dom";
 import { useSelector } from "react-redux";
+import AlertComponent from "../../components/Alert";
 export default function FormDialog({ open, handleClose }) {
   const { id } = useParams();
   const drug = useSelector((state) =>
     state.drugs.Drugs.find((d) => d.id === id)
   );
-  console.log(drug);
   const [name, setName] = useState(drug.name);
-  // const [stock, setStock] = useState(drug.stock);
   const [supplier, setSupplier] = useState(drug.supplier);
   const [implications, setImplications] = useState(
     drug.implications.toString()
@@ -27,7 +26,12 @@ export default function FormDialog({ open, handleClose }) {
   const [dosage, setDosage] = useState(drug.dosage);
   const [price, setPrice] = useState(drug.price);
   const [file, setFile] = useState();
+  // ALERT INFO
+  const [openAlert, setOpenAlert] = useState(false);
+  const [message, setMessage] = useState("");
+  const [severity, setSeverity] = useState("success");
   const handleEdit = async () => {
+    setOpenAlert(true);
     const drugDetails = {
       name,
       supplier,
@@ -35,11 +39,23 @@ export default function FormDialog({ open, handleClose }) {
       dosage,
       price,
     };
-    const res = await request.put(`/drugs/${id}`, drugDetails);
-    alert(res.data);
+    try {
+      const res = await request.put(`/drugs/${id}`, drugDetails);
+      setMessage(res.data);
+    } catch (err) {
+      setMessage(err.response.data);
+      setSeverity("error");
+    }
   };
   return (
     <div>
+      <AlertComponent
+        open={openAlert}
+        severity={severity}
+        message={message}
+        close={() => setOpenAlert(false)}
+      />
+
       <Dialog open={open} onClose={handleClose}>
         <DialogTitle className="dial-heading">ADD/EDIT DRUG FORM</DialogTitle>
         <DialogContent>
@@ -55,16 +71,6 @@ export default function FormDialog({ open, handleClose }) {
             className="dial-input"
             onChange={(e) => setName(e.target.value)}
           />
-          {/* <TextField
-            margin="dense"
-            label="stock"
-            type="number"
-            fullWidth
-            value={stock}
-            variant="outlined"
-            className="dial-input"
-            onChange={(e) => setStock(e.target.value)}
-          /> */}
           <TextField
             margin="dense"
             label="Supplier"
