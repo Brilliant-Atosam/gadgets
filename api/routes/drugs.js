@@ -13,24 +13,27 @@ router.get("/", async (req, res) => {
 // ADD
 router.post("/", async (req, res) => {
   const { name, stock, supplier, dosage, implications, price, img } = req.body;
-  console.log(req.body);
-  try {
-    const newDrug = new Drug({
-      name,
-      stock,
-      supplier,
-      implications,
-      dosage,
-      price,
-      img,
-      id: Math.floor(10000 + Math.random() * 10000),
-    });
-    console.log(newDrug);
-    await newDrug.save();
-    res.status(200).json("Drug has been added successfully");
-  } catch (err) {
-    res.status(500).json("Something went wrong!");
-    console.log(err.message);
+  const added = await Drug.findOne({ name });
+  if (added) {
+    res.status(409).json(`${name} is already added to records!`);
+  } else {
+    try {
+      const newDrug = new Drug({
+        name,
+        stock,
+        supplier,
+        implications,
+        dosage,
+        price,
+        img,
+        id: Math.floor(10000 + Math.random() * 10000),
+      });
+      await newDrug.save();
+      res.status(200).json("Drug has been added successfully");
+    } catch (err) {
+      res.status(500).json("Something went wrong!");
+      console.log(err.message);
+    }
   }
 });
 // EDIT DRUG

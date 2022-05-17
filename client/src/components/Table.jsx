@@ -7,6 +7,9 @@ export default function DataTable({ rows, columns }) {
         columns={columns}
         pageSize={8}
         rowsPerPageOptions={[8]}
+        key={(Math.floor(Math.random() * 100000) + 100000)
+          .toString()
+          .substring(1)}
       />
     </div>
   );

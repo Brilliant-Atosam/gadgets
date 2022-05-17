@@ -6,6 +6,8 @@ import { request } from "../../request";
 import Loading from "../../components/Loading";
 import { LoginStart, LoginSuccess, LoginFailure } from "../../redux/login";
 import { useDispatch } from "react-redux";
+import { drugsFailure, drugsStart, drugsSuccess } from "../../redux/drugs";
+import { salesFailure, salesStart, salesSuccess } from "../../redux/sales";
 export const Login = () => {
   const dispatch = useDispatch();
 
@@ -34,6 +36,20 @@ export const Login = () => {
         setMessage(res.data);
         setLoading(false);
         dispatch(LoginSuccess(res.data));
+        dispatch(drugsStart);
+        dispatch(salesStart);
+        try {
+          const fetchData = async () => {
+            const drugs = await request.get("/drugs");
+            dispatch(drugsSuccess(drugs.data));
+            const sales = await request.get("/sales");
+            dispatch(salesSuccess(sales.data));
+          };
+          fetchData();
+        } catch (err) {
+          dispatch(drugsFailure(err.response.data));
+          dispatch(salesFailure(err.response.data));
+        }
       } catch (err) {
         dispatch(LoginFailure());
         setOpen(true);
@@ -45,6 +61,7 @@ export const Login = () => {
   };
   return (
     <div className="login-container p20">
+      <Loading open={loading} />
       <h1 className="login-greetings">Welcome! Login to continue</h1>
       <AlertComponent
         open={open}

@@ -6,6 +6,9 @@ const salesSchema = new mongoose.Schema({
   drug_name: String,
   quantity: Number,
   cost: Number,
-  createdAt: { type: String, default: moment().format("DD-MM-YYYY") },
+  createdAt: {
+    type: String,
+    default: moment(new Date()).format("ddd D/M/YY h:mm:ss"),
+  },
 });
 module.exports = mongoose.model("Sales", salesSchema);

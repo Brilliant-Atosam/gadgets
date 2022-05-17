@@ -137,6 +137,5 @@
 @media screen and (max-width: 770px) {
   .chart {
     overflow: scroll;
-    /* display: none; */
   }
 }

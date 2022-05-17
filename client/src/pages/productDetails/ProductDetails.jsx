@@ -7,7 +7,6 @@ import {
 import { useSelector } from "react-redux";
 import { useParams } from "react-router-dom";
 import DataTable from "../../components/Table";
-import { salesColumn } from "../../data";
 import { request } from "../../request";
 import QuickStat from "./QuickStat";
 import moment from "moment";
@@ -19,13 +18,18 @@ import {
   XAxis,
   YAxis,
 } from "recharts";
-import { data } from "../../data";
+import { data, drugSalesColumn } from "../../data";
 import FormDialog from "./EditDrug";
 import { useState } from "react";
 import ResponsiveDialog from "../../components/Dialog";
 import AlertComponent from "../../components/Alert";
 import SellDial from "../dashboard/Sell";
+import Navbar from "../../components/nav/Navbar";
+import Loading from "../../components/Loading";
+import { salesFailure, salesStart, salesSuccess } from "../../redux/sales";
+import { useDispatch } from "react-redux";
 const ProductDetails = () => {
+  const dispatch = useDispatch();
   const { id } = useParams();
   const drug = useSelector((state) =>
     state.drugs.Drugs.find((drug) => drug.id === id)
@@ -34,39 +38,45 @@ const ProductDetails = () => {
   const salesHistory = useSelector((state) =>
     state.sales.Sales.filter((sale) => sale.drug_id === id)
   );
-  let totalSalesFigure =
-    salesHistory.length > 1
-      ? salesHistory.reduce((a, b) => a.cost + b.cost)
-      : salesHistory.length === 1
+  const [sales, setSales] = useState(salesHistory);
+  let [totalSalesFigure, setTotalSalesFigure] = useState(
+    salesHistory?.length > 1
+      ? salesHistory?.reduce((a, b) => a.cost + b.cost)
+      : salesHistory?.length === 1
       ? salesHistory[0].cost
-      : 0;
-  const salesToday = salesHistory?.filter(
-    (sale) => sale.createdAt === moment().format("DD-MM-YYYY")
+      : 0
   );
-  let dailySalesFigure =
-    salesHistory.length > 1
-      ? salesToday.reduce((a, b) => a.cost + b.cost)
-      : salesToday.length === 1
+
+  const salesToday = salesHistory?.filter((sale) =>
+    sale?.createdAt?.indexOf(moment().format("DD-MM-YYYY") > -1)
+  );
+  let [dailySalesFigure, setDailySalesFigure] = useState(
+    salesHistory?.length > 1
+      ? salesToday?.reduce((a, b) => a.cost + b.cost)
+      : salesToday?.length === 1
       ? salesToday[0].cost
-      : 0;
+      : 0
+  );
   const salesMonth = salesHistory?.filter((sale) =>
     sale?.createdAt?.indexOf(moment().format("-MM-YYYY") > -1)
   );
-  let monthlySalesFigure =
-    salesHistory.length > 1
-      ? salesMonth.reduce((a, b) => a.cost + b.cost)
-      : salesMonth.length === 1
+  let [monthlySalesFigure, setMonthlySalesFigure] = useState(
+    salesHistory?.length > 1
+      ? salesMonth?.reduce((a, b) => a.cost + b.cost)
+      : salesMonth?.length === 1
       ? salesMonth[0].cost
-      : 0;
+      : 0
+  );
   let salesYear = salesHistory?.filter((sale) =>
     sale?.createdAt?.indexOf(moment().format("-YYYY") > -1)
   );
-  let annualSalesFigure =
-    salesHistory.length > 1
-      ? salesYear.reduce((a, b) => a.cost + b.cost)
-      : salesYear.length === 1
+  let [annualSalesFigure, setAnnualSalesFigure] = useState(
+    salesHistory?.length > 1
+      ? salesYear?.reduce((a, b) => a.cost + b.cost)
+      : salesYear?.length === 1
       ? salesYear[0].cost
-      : 0;
+      : 0
+  );
   const deleteDrug = async () => {
     try {
       const res = await request.delete(`/drugs/${id}`);
@@ -76,8 +86,6 @@ const ProductDetails = () => {
   };
   // DIALOG INFO
   const [openDial, setOpenDial] = useState(false);
-  const [content, setContent] = useState("Okay");
-  const [dialTitle, setDialTitle] = useState("Ok");
   // OPEN SELL DIAL
   const [openSell, setOpenSell] = useState(false);
   const [quantity, setQuantity] = useState(0);
@@ -97,7 +105,7 @@ const ProductDetails = () => {
         drug_id: id,
         cost: drug.price * quantity,
         quantity,
-        date: moment().format("DD-MM-YYYY"),
+        createdAt: moment().format("DD-MM-YYYY"),
         id: (Math.floor(Math.random() * 100000) + 100000)
           .toString()
           .substring(1),
@@ -107,10 +115,11 @@ const ProductDetails = () => {
         setQuantity(0);
         setMessage(res.data);
         setOpenAlert(true);
-        dailySalesFigure = dailySalesFigure + salesDetails.cost;
-        monthlySalesFigure = monthlySalesFigure + salesDetails.cost;
-        annualSalesFigure = annualSalesFigure + salesDetails.cost;
-        totalSalesFigure = totalSalesFigure + salesDetails.cost;
+        setDailySalesFigure(dailySalesFigure + salesDetails.cost);
+        setMonthlySalesFigure(monthlySalesFigure + salesDetails.cost);
+        setAnnualSalesFigure(annualSalesFigure + salesDetails.cost);
+        setTotalSalesFigure(totalSalesFigure + salesDetails.cost);
+        setSales([salesDetails, ...sales]);
       } catch (err) {
         setOpenAlert(true);
         setMessage(err.response.data);
@@ -119,8 +128,23 @@ const ProductDetails = () => {
       setOpenSell(false);
     }
   };
+  const [loading, setLoading] = useState(false);
+  // REFRESHING DATA
+  const handleRefresh = async () => {
+    setLoading(true);
+    dispatch(salesStart());
+    try {
+      const sales = await request.get("/sales");
+      dispatch(salesSuccess(sales.data));
+    } catch (err) {
+      dispatch(salesFailure());
+    }
+    setLoading(false);
+  };
   return (
     <>
+      <Navbar refresh={() => handleRefresh()} />
+      <Loading open={loading} />
       <AlertComponent
         open={openAlert}
         severity={severity}
@@ -171,8 +195,13 @@ const ProductDetails = () => {
                 />
               </div>
             </div>
-            {salesHistory && (
-              <DataTable rows={salesHistory} columns={salesColumn} />
+            {sales && (
+              <DataTable
+                rows={[...sales].sort((a, b) =>
+                  a.createdAt < b.createdAt ? -1 : 1
+                )}
+                columns={drugSalesColumn}
+              />
             )}
           </div>
         </div>
@@ -189,27 +218,27 @@ const ProductDetails = () => {
               <div className="drug-info-left">
                 <div className="drug-info-key-vale">
                   <span className="key">Name</span>:
-                  <span className="value">{drug.name}</span>
+                  <span className="value">{drug?.name}</span>
                 </div>
                 <div className="drug-info-key-vale">
                   <span className="key">Supplier</span>:
-                  <span className="value">{drug.supplier}</span>
+                  <span className="value">{drug?.supplier}</span>
                 </div>
                 <div className="drug-info-key-vale">
                   <span className="key">Stock</span>:
-                  <span className="value">{drug.stock}</span>
+                  <span className="value">{drug?.stock}</span>
                 </div>
               </div>
               <div className="drug-info-right">
                 <div className="drug-info-key-vale">
                   <span className="key">Implications</span>:
                   <span className="value">
-                    {drug.implications.toString().replace(",", ", ")}
+                    {drug.implications?.toString().replace(",", ", ")}
                   </span>
                 </div>
                 <div className="drug-info-key-vale">
                   <span className="key">Dosage</span>:
-                  <span className="value">{drug.dosage}</span>
+                  <span className="value">{drug?.dosage}</span>
                 </div>
               </div>
             </div>
@@ -217,7 +246,7 @@ const ProductDetails = () => {
           <div className="chart">
             <div className="dash-right-top">
               <h1 className="heading mb20">
-                Annual Sales Performance Area Chart of {drug.name} in
+                Annual Sales Performance Area Chart of {drug?.name} in
                 {moment().format("yyyy")}
               </h1>
             </div>

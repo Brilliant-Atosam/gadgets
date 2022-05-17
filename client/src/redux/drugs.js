@@ -19,8 +19,14 @@ const drugsSlice = createSlice({
       state.isFetching = false;
       state.error = true;
     },
+    clearDrugs: (state) => {
+      state.Drugs = null;
+      state.isFetching = false;
+      state.error = false;
+    },
   },
 });
 
-export const { drugsStart, drugsSuccess, drugsFailure } = drugsSlice.actions;
+export const { drugsStart, drugsSuccess, drugsFailure, clearDrugs } =
+  drugsSlice.actions;
 export default drugsSlice.reducer;

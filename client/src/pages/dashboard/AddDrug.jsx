@@ -8,72 +8,70 @@ import {
   DialogContentText,
   DialogTitle,
 } from "@mui/material";
-import { Add, AddPhotoAlternate, CancelOutlined } from "@mui/icons-material";
+import { Add, Close } from "@mui/icons-material";
 import { request } from "../../request";
+import { useSelector } from "react-redux";
+import AlertComponent from "../../components/Alert";
+export default function FormDialog({
+  open,
+  handleClose,
+  addDrug,
 
-export default function FormDialog({ open, handleClose }) {
+}) {
+  const allDrugs = useSelector((state) => state.drugs?.Drugs);
+  const [drugs, setDrugs] = useState(allDrugs);
   const [name, setName] = useState("");
   const [stock, setStock] = useState();
   const [supplier, setSupplier] = useState("");
   const [implications, setImplications] = useState("");
   const [dosage, setDosage] = useState("");
   const [price, setPrice] = useState();
-  const [file, setFile] = useState();
-  const handleAdd = async () => {
-    const drugDetails = {
-      name,
-      stock,
-      supplier,
-      implications: implications.split(", "),
-      dosage,
-      price,
-      img: file ? name.replace(" ", "_") : undefined,
-    };
-    if (file) {
-      const formData = new FormData();
-      formData.append("name", name);
-      formData.append(`drug`, file);
-      await request.post("/upload", formData, {
-        headers: { "Content-Type": "multipart/form-data" },
-      });
-    }
-    const res = await request.post("/drugs", drugDetails);
-    alert(res.data);
-  };
+  const [openAlert, setOpenAlert] = useState(false);
+  const [severity, setSeverity] = useState("success");
+  const [message, setMessage] = useState("");
+
   return (
     <div>
       <Dialog open={open} onClose={handleClose}>
         <DialogTitle className="dial-heading">ADD/EDIT DRUG FORM</DialogTitle>
+        <AlertComponent
+          open={openAlert}
+          severity={severity}
+          message={message}
+          close={() => {
+            setOpenAlert(false);
+          }}
+        />
         <DialogContent>
           <DialogContentText>Kindly fill all fields</DialogContentText>
           <TextField
             autoFocus
             margin="dense"
-            // id="name"
             label="Drug name"
             type="text"
             fullWidth
             variant="outlined"
             className="dial-input"
+            value={name}
             onChange={(e) => setName(e.target.value)}
           />
           <TextField
             margin="dense"
-            // id="name"
             label="stock"
             type="number"
             fullWidth
             variant="outlined"
             className="dial-input"
+            value={stock}
             onChange={(e) => setStock(e.target.value)}
           />
           <TextField
             margin="dense"
-            // id="name"
             label="Supplier"
             type="text"
             fullWidth
             variant="outlined"
+            value={supplier}
             className="dial-input"
             onChange={(e) => setSupplier(e.target.value)}
           />
@@ -93,6 +91,7 @@ export default function FormDialog({ open, handleClose }) {
             label="Price"
             type="number"
             fullWidth
+            value={price}
             variant="outlined"
             className="dial-input"
           />
@@ -106,29 +105,12 @@ export default function FormDialog({ open, handleClose }) {
             onChange={(e) => setDosage(e.target.value)}
             className="dial-input"
           />
-          <label htmlFor="drug-img">
-            <AddPhotoAlternate className="file-picker" />
-          </label>
-          <TextField
-            margin="dense"
-            id="drug-img"
-            type="file"
-            accept=".png, .jpg, .jpeg"
-            onChange={(e) => setFile(e.target.files[0])}
-          />
-          {file && (
-            <img
-              alt={name}
-              className="img-preview"
-              src={URL.createObjectURL(file)}
-            />
-          )}
         </DialogContent>
         <DialogActions>
           <Button onClick={handleClose}>
-            <CancelOutlined className="dial-icon cancel" />
+            <Close className="dial-icon cancel" />
           </Button>
-          <Button onClick={() => handleAdd()}>
+          <Button onClick={addDrug}>
             <Add className="dial-icon" />
           </Button>
         </DialogActions>

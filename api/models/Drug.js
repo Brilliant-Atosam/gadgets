@@ -11,11 +11,11 @@ const drugSchema = new mongoose.Schema({
   img: String,
   createdAt: {
     type: String,
-    default: moment().format("DD-MM-YYYY"),
+    default: moment(new Date()).format("ddd DD/M/YY h:mm:ss"),
   },
   updatedAt: {
     type: String,
-    default: moment().format("DD-MM-YYYY"),
+    default: moment(new Date()).format("ddd DD/M/YY h:mm:ss"),
   },
 });
 module.exports = mongoose.model("Drug", drugSchema);

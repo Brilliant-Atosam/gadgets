@@ -29,8 +29,23 @@ import { useEffect, useState } from "react";
 import { request } from "../../request";
 import { Link } from "react-router-dom";
 import Restock from "../dashboard/Restock";
+import Navbar from "../../components/nav/Navbar";
+import Loading from "../../components/Loading";
+import AlertComponent from "../../components/Alert";
 const Drugs = () => {
   const dispatch = useDispatch();
+  useEffect(() => {
+    dispatch(drugsStart);
+    try {
+      const fetchData = async () => {
+        const drugs = await request.get("/drugs");
+        dispatch(drugsSuccess(drugs.data));
+      };
+      fetchData();
+    } catch (err) {
+      dispatch(drugsFailure(err.response.data));
+    }
+  }, [dispatch]);
   const allDrugs = useSelector((state) => state.drugs.Drugs);
   const [drugs, setDrugs] = useState(allDrugs);
   const [search, setSearch] = useState("");
@@ -45,35 +60,42 @@ const Drugs = () => {
   const [supplier, setSupplier] = useState("");
   const [implications, setImplications] = useState("");
   const [dosage, setDosage] = useState("");
-  const [file, setFile] = useState();
+  const [openAlert, setOpenAlert] = useState(false);
+  const [severity, setSeverity] = useState("success");
+  const [message, setMessage] = useState("");
   //   ADD DRUG
   const handleAdd = async () => {
-    const drugDetails = {
-      name,
-      stock,
-      supplier,
-      implications: implications.split(", "),
-      dosage,
-      price,
-      img: file ? name.replace(" ", "_") : undefined,
-    };
-    if (file) {
-      const formData = new FormData();
-      formData.append("name", name);
-      formData.append(`drug`, file);
-      await request.post("/upload", formData, {
-        headers: { "Content-Type": "multipart/form-data" },
-      });
+    setOpenAlert(true);
+    if (!name || !price || stock < 1) {
+      setSeverity("warning");
+      setMessage("Provide valid data for name, price or stock");
+    } else {
+      const drugDetails = {
+        name,
+        stock,
+        supplier,
+        implications: implications.split(", "),
+        dosage,
+        price,
+        id: (Math.floor(Math.random() * 100000) + 100000)
+          .toString()
+          .substring(1),
+      };
+      try {
+        const res = await request.post("/drugs", drugDetails);
+        setName("");
+        setStock("");
+        setPrice("");
+        setSupplier("");
+        setImplications("");
+        setDosage("");
+        setMessage(res.data);
+        setDrugs([drugDetails, ...drugs]);
+      } catch (err) {
+        setMessage(err.response.data);
+        setSeverity("error");
+      }
     }
-    const res = await request.post("/drugs", drugDetails);
-    setName("");
-    setStock("");
-    setPrice("");
-    setSupplier("");
-    setImplications("");
-    setDosage("");
-    setFile("");
-    alert(res.data);
   };
   //   SELL DRUG
   const sellDrug = async () => {
@@ -92,18 +114,6 @@ const Drugs = () => {
     setOpenDial(false);
   };
 
-  useEffect(() => {
-    dispatch(drugsStart);
-    try {
-      const fetchData = async () => {
-        const drugs = await request.get("/drugs");
-        dispatch(drugsSuccess(drugs.data));
-      };
-      fetchData();
-    } catch (err) {
-      dispatch(drugsFailure(err.response.data));
-    }
-  }, [dispatch]);
   const drugsColumn = [
     { field: "id", headerName: "ID", width: 70 },
     { field: "name", headerName: "Drugs name", width: 230 },
@@ -114,10 +124,9 @@ const Drugs = () => {
       width: 200,
       renderCell: (params) => (
         <div className="action-btn">
-          <Visibility
-            className="action-icon"
-            onClick={() => (window.location.href = `/drugs/${params.row.id}`)}
-          />
+          <Link to={`/drugs/${params.row.id}`}>
+            <Visibility className="action-icon" />
+          </Link>
           <CurrencyExchange
             className="action-icon"
             onClick={() => {
@@ -148,11 +157,26 @@ const Drugs = () => {
       setOpenStock(false);
       setStock(0);
       window.location.reload();
-      window.location.reload();
     } catch (err) {}
   };
+  const [loading, setLoading] = useState(false);
+  // REFRESHING DATA
+  const handleRefresh = async () => {
+    setLoading(true);
+    dispatch(drugsStart());
+    try {
+      const sales = await request.get("/drugs");
+      dispatch(drugsSuccess(sales.data));
+    } catch (err) {
+      dispatch(drugsFailure());
+    }
+    setLoading(false);
+  };
+
   return (
     <>
+      <Navbar refresh={() => handleRefresh()} />
+      <Loading open={loading} />
       <FormDialog open={openDial} handleClose={handleClose} />
       <Restock
         openStock={openStock}
@@ -194,6 +218,14 @@ const Drugs = () => {
           <div className="drugs-container drugs-page">
             <div className="add-drug-form">
               <h1 className="heading">Add new drug</h1>
+              <AlertComponent
+                open={openAlert}
+                severity={severity}
+                message={message}
+                close={() => {
+                  setOpenAlert(false);
+                }}
+              />
               <TextField
                 autoFocus
                 margin="dense"
@@ -202,6 +234,7 @@ const Drugs = () => {
                 fullWidth
                 variant="outlined"
                 className="dial-input"
+                value={name}
                 onChange={(e) => setName(e.target.value)}
               />
               <TextField
@@ -211,6 +244,7 @@ const Drugs = () => {
                 fullWidth
                 variant="outlined"
                 className="dial-input"
+                value={stock}
                 onChange={(e) => setStock(e.target.value)}
               />
               <TextField
@@ -220,6 +254,7 @@ const Drugs = () => {
                 fullWidth
                 variant="outlined"
                 className="dial-input"
+                value={supplier}
                 onChange={(e) => setSupplier(e.target.value)}
               />
               <TextField
@@ -239,6 +274,7 @@ const Drugs = () => {
                 type="number"
                 fullWidth
                 variant="outlined"
+                value={price}
                 className="dial-input"
               />
               <TextField
@@ -251,25 +287,8 @@ const Drugs = () => {
                 onChange={(e) => setDosage(e.target.value)}
                 className="dial-input"
               />
-              <label htmlFor="drug-img">
-                <AddPhotoAlternate className="file-picker" />
-              </label>
-              <TextField
-                margin="dense"
-                id="drug-img"
-                type="file"
-                accept=".png, .jpg, .jpeg"
-                onChange={(e) => setFile(e.target.files[0])}
-              />
-              {file && (
-                <img
-                  alt={name}
-                  className="img-preview"
-                  src={URL.createObjectURL(file)}
-                />
-              )}
               <button className="btn add-drug-btn" onClick={() => handleAdd()}>
-                <Add className="mr10" /> Add
+                <Add className="mr10" /> Add Drug
               </button>
             </div>
           </div>
@@ -284,7 +303,11 @@ const Drugs = () => {
                 setSearch(e.target.value);
                 setDrugs(
                   allDrugs.filter(
-                    (drug) => drug.name.indexOf(e.target.value) > -1
+                    (drug) =>
+                      drug.name &&
+                      drug.name
+                        .toLowerCase()
+                        .indexOf(e.target.value.toLowerCase()) > -1
                   )
                 );
               }}
@@ -315,7 +338,12 @@ const Drugs = () => {
               </Link>
             </div>
           </div>
-          <DataTable rows={drugs} columns={drugsColumn} />
+          <DataTable
+            rows={[...drugs].sort((a, b) =>
+              a.name.toLowerCase() > b.name.toLowerCase() ? 1 : -1
+            )}
+            columns={drugsColumn}
+          />
         </div>
       </div>
     </>

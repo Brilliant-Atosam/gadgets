@@ -6,9 +6,11 @@ const multer = require("multer");
 const path = require("path");
 const server = express();
 const router = require("./routes/auth");
+const moment = require("moment");
 require("dotenv").config();
 // DB CONNECTION
-mongoose.connect(process.env.DB_CONNECTION_STRING, (err) => {
+
+mongoose.connect(process.env.DB_CONNECTION_STRING_ATLAS, (err) => {
   err ? console.log(err.message) : console.log("Connected to DB");
 });
 server.use(express.json());
@@ -17,19 +19,20 @@ server.use("static", express.static("public"));
 // CORS SETTINGS
 server.use(cors());
 // UPLOAD
-const storage = multer.diskStorage({
-  destination: "./public/drugs",
-  filename: (req, file, cb) => {
-    cb(
-      null,
-      req.body?.name?.replace(" ", "_") + path.extname(file.originalname)
-    );
-  },
-});
-const uploadDrug = multer({
-  storage,
-}).single("drug");
-server.post("/upload", uploadDrug, async (req, res) => res.status(200));
+// console.log(moment(new Date()).format("ddd D/M/YYYY h:mm:ss"));
+// const storage = multer.diskStorage({
+//   destination: "./public/drugs",
+//   filename: (req, file, cb) => {
+//     cb(
+//       null,
+//       req.body?.name?.replace(" ", "_") + path.extname(file.originalname)
+//     );
+//   },
+// });
+// const uploadDrug = multer({
+//   storage,
+// }).single("drug");
+// server.post("/upload", uploadDrug, async (req, res) => res.status(200));
 // routes
 server.use("/auth", require("./routes/auth"));
 server.use("/drugs", require("./routes/drugs"));

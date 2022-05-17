@@ -12,9 +12,19 @@
 .navbar-container a {
   color: white;
 }
-.nav-right {
+.nav-right,
+.nav-left {
   display: flex;
   align-items: center;
+}
+.refresh {
+  display: flex;
+  align-items: center;
+  margin-left: 10px;
+  border: 2px solid white;
+  padding: 5px;
+  border-radius: 4px;
+  cursor: pointer;
 }
 .toggler {
   font-size: 35px !important;
@@ -53,7 +63,7 @@
   .navbar-container {
     padding: 0 10px;
   }
-  .menu-item:not(.sign-out) {
+  .menu-item {
     display: none;
   }
   .toggler {
@@ -66,10 +76,11 @@
     position: absolute;
     top: 60px;
     right: 0;
-    background: #087a75;
+    background: #1fa7a0;
     height: calc(100vh - 60px);
     width: 50%;
     transition: 1s ease;
+    z-index: 9999999;
   }
   .menu-item-mb {
     font-size: 16px;

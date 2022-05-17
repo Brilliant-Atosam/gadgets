@@ -19,8 +19,13 @@ const salesSlice = createSlice({
       state.isFetching = false;
       state.error = true;
     },
+    clearSales: (state) => {
+      state.Sales = null;
+      state.isFetching = false;
+      state.error = false;
+    },
   },
 });
 
-export const { salesStart, salesSuccess, salesFailure } = salesSlice.actions;
+export const { salesStart, salesSuccess, salesFailure, clearSales } = salesSlice.actions;
 export default salesSlice.reducer;

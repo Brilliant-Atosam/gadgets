@@ -1,11 +1,11 @@
 .login-container {
-  height: calc(100vh - 60px);
+  height: 100vh;
   background: linear-gradient(
       rgba(48, 230, 220, 0.226) 100%,
       rgba(48, 230, 220, 0.226) 100%
     ),
     url("../../bg.jpg");
-  background-size: cover;
+  background-size: 100% 100%;
   width: 100vw;
   display: flex;
   align-items: center;
@@ -24,4 +24,9 @@
   max-width: 400px;
   background: #087a75;
   color: white;
+}
+@media screen and (max-width: 770px) {
+  .login-container {
+    background-size: cover;
+  }
 }

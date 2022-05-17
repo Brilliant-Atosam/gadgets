@@ -11,43 +11,70 @@ import {
 import moment from "moment";
 import { useSelector } from "react-redux";
 import QuickStat from "./QuickStat";
+import Navbar from "../../components/nav/Navbar";
+import Loading from "../../components/Loading";
+import { salesFailure, salesStart, salesSuccess } from "../../redux/sales";
+import { request } from "../../request";
+import { useState } from "react";
+import { useDispatch } from "react-redux";
 const Sales = () => {
+  const dispatch = useDispatch();
   const salesRecords = useSelector((state) => state.sales.Sales);
-  const dailySales = salesRecords?.filter(
-    (sale) => sale.createdAt === moment().format("DD-MM-YYYY")
+  const dailySales = salesRecords?.filter((sale) =>
+    sale.createdAt?.indexOf(moment().format("DD-MM-YYYY") > -1)
   );
-  const dailySalesFigure =
-    dailySales.length > 1
-      ? dailySales.reduce((a, b) => a.cost + b.cost)
-      : dailySales.length === 1
-      ? dailySales[0].cost
-      : 0;
+  let salesTodayFigures = [];
+  dailySales?.forEach((sale) => salesTodayFigures.push(sale.cost));
+  const [dailySalesFigure, setDailySales] = useState(
+    salesTodayFigures.length > 0 ? salesTodayFigures.reduce((a, b) => a + b) : 0
+  );
   const salesMonth = salesRecords?.filter((sale) =>
     sale?.createdAt?.indexOf(moment().format("-MM-YYYY") > -1)
   );
-  const monthlySalesFigure =
-    salesRecords.length > 1
-      ? salesMonth.reduce((a, b) => a.cost + b.cost)
-      : salesMonth.length === 1
-      ? salesMonth[0].cost
-      : 0;
+  let monthlySalesFigures = [];
+  salesMonth?.forEach((sale) => monthlySalesFigures.push(sale.cost));
+
+  const [monthlySalesFigure, setMonthlySales] = useState(
+    monthlySalesFigures.length > 0
+      ? monthlySalesFigures.reduce((a, b) => a + b)
+      : 0
+  );
   const salesYear = salesRecords?.filter((sale) =>
     sale?.createdAt?.indexOf(moment().format("-YYYY") > -1)
   );
+  let annualSalesFigures = [];
+  salesYear?.forEach((sale) => annualSalesFigures.push(sale.cost));
   const annualSalesFigure =
-    salesRecords.length > 1
-      ? salesYear.reduce((a, b) => a.cost + b.cost)
-      : salesYear.length === 1
-      ? salesYear[0].cost
+    annualSalesFigures.length > 0
+      ? annualSalesFigures.reduce((a, b) => a + b)
       : 0;
+      let totalSalesFigures = [];
+      salesRecords.forEach(sale => totalSalesFigures.push(sale.cost))
   const totalSalesFigure =
-    salesRecords.length > 1
-      ? salesRecords.reduce((a, b) => a.cost + b.cost)
-      : salesRecords.length === 1
-      ? salesRecords[0].cost
+    totalSalesFigures.length > 0
+      ? totalSalesFigures.reduce((a, b) => a + b)
       : 0;
+  console.log(dailySalesFigure);
+  console.log();
+  console.log();
+  console.log();
+  const [loading, setLoading] = useState(false);
+  // REFRESHING DATA
+  const handleRefresh = async () => {
+    setLoading(true);
+    dispatch(salesStart());
+    try {
+      const sales = await request.get("/sales");
+      dispatch(salesSuccess(sales.data));
+    } catch (err) {
+      dispatch(salesFailure());
+    }
+    setLoading(false);
+  };
   return (
     <div className="dashboard-container">
+      <Navbar refresh={() => handleRefresh()} />
+      <Loading open={loading} />
       <div className="dash-left">
         <QuickStat
           dailySales={dailySalesFigure}
@@ -61,7 +88,14 @@ const Sales = () => {
               Sales History as at <b>{moment().format("dddd DD-MM-yy")}</b>
             </h1>
           </div>
-          {<DataTable rows={salesRecords} columns={salesColumn} />}
+          {
+            <DataTable
+              rows={[...salesRecords].sort((a, b) =>
+                a.createdAt > b.createdAt ? -1 : 1
+              )}
+              columns={salesColumn}
+            />
+          }
         </div>
       </div>
       <div className="dash-right chart">

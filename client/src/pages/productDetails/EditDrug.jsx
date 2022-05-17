@@ -16,7 +16,7 @@ import AlertComponent from "../../components/Alert";
 export default function FormDialog({ open, handleClose }) {
   const { id } = useParams();
   const drug = useSelector((state) =>
-    state.drugs.Drugs.find((d) => d.id === id)
+    state.drugs.Drugs?.find((d) => d.id === id)
   );
   const [name, setName] = useState(drug.name);
   const [supplier, setSupplier] = useState(drug.supplier);
