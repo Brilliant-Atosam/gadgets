@@ -19,13 +19,11 @@ import {
   drugsStart,
   drugsSuccess,
   drugsFailure,
-  clearDrugs,
 } from "../../redux/drugs";
 import {
   salesStart,
   salesSuccess,
   salesFailure,
-  clearSales,
 } from "../../redux/sales";
 import {
   TextField,
@@ -56,8 +54,9 @@ const Dashboard = () => {
     try {
       const drugs = await request.get("/drugs");
       dispatch(drugsSuccess(drugs.data));
-      const sales = await request.get("/drugs");
+      const sales = await request.get("/sales");
       dispatch(salesSuccess(sales.data));
+      window.location.reload();
     } catch (err) {
       dispatch(drugsFailure());
       dispatch(salesFailure());

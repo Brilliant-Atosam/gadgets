@@ -48,8 +48,8 @@ const Sales = () => {
     annualSalesFigures.length > 0
       ? annualSalesFigures.reduce((a, b) => a + b)
       : 0;
-      let totalSalesFigures = [];
-      salesRecords.forEach(sale => totalSalesFigures.push(sale.cost))
+  let totalSalesFigures = [];
+  salesRecords.forEach((sale) => totalSalesFigures.push(sale.cost));
   const totalSalesFigure =
     totalSalesFigures.length > 0
       ? totalSalesFigures.reduce((a, b) => a + b)
@@ -66,6 +66,7 @@ const Sales = () => {
     try {
       const sales = await request.get("/sales");
       dispatch(salesSuccess(sales.data));
+      window.location.reload();
     } catch (err) {
       dispatch(salesFailure());
     }

@@ -3,6 +3,7 @@ import {
   Delete,
   Edit,
   RestartAlt,
+  WindowSharp,
 } from "@mui/icons-material";
 import { useSelector } from "react-redux";
 import { useParams } from "react-router-dom";
@@ -136,6 +137,7 @@ const ProductDetails = () => {
     try {
       const sales = await request.get("/sales");
       dispatch(salesSuccess(sales.data));
+      window.location.reload();
     } catch (err) {
       dispatch(salesFailure());
     }

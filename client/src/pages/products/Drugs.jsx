@@ -165,8 +165,9 @@ const Drugs = () => {
     setLoading(true);
     dispatch(drugsStart());
     try {
-      const sales = await request.get("/drugs");
-      dispatch(drugsSuccess(sales.data));
+      const drugs = await request.get("/drugs");
+      dispatch(drugsSuccess(drugs.data));
+      window.location.reload()
     } catch (err) {
       dispatch(drugsFailure());
     }
