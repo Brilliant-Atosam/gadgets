@@ -1,4 +1,5 @@
 const router = require("express").Router();
+const moment = require("moment");
 // const { set } = require("mongoose");
 const Drug = require("../models/Drug");
 // GET ALL DRUGS
@@ -26,6 +27,8 @@ router.post("/", async (req, res) => {
         dosage,
         price,
         img,
+        createdAt: moment().format("ddd DD/M/YY h:mm:ss"),
+        updatedAt: moment().format("ddd DD/M/YY h:mm:ss"),
         id: Math.floor(10000 + Math.random() * 10000),
       });
       await newDrug.save();

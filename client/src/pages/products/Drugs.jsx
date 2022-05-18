@@ -167,7 +167,7 @@ const Drugs = () => {
     try {
       const drugs = await request.get("/drugs");
       dispatch(drugsSuccess(drugs.data));
-      window.location.reload()
+      window.location.reload();
     } catch (err) {
       dispatch(drugsFailure());
     }
@@ -228,7 +228,6 @@ const Drugs = () => {
                 }}
               />
               <TextField
-                autoFocus
                 margin="dense"
                 label="Drug name"
                 type="text"

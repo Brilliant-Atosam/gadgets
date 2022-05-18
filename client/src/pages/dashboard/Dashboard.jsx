@@ -15,16 +15,8 @@ import {
 import moment from "moment";
 import { useSelector, useDispatch } from "react-redux";
 import DataTable from "../../components/Table";
-import {
-  drugsStart,
-  drugsSuccess,
-  drugsFailure,
-} from "../../redux/drugs";
-import {
-  salesStart,
-  salesSuccess,
-  salesFailure,
-} from "../../redux/sales";
+import { drugsStart, drugsSuccess, drugsFailure } from "../../redux/drugs";
+import { salesStart, salesSuccess, salesFailure } from "../../redux/sales";
 import {
   TextField,
   Button,
@@ -258,7 +250,6 @@ const Dashboard = () => {
         <DialogContent>
           <DialogContentText>Kindly fill all fields</DialogContentText>
           <TextField
-            autoFocus
             margin="dense"
             label="Drug name"
             type="text"
@@ -340,7 +331,6 @@ const Dashboard = () => {
         <DialogContent>
           <DialogContentText>{name}</DialogContentText>
           <TextField
-            autoFocus
             margin="dense"
             label="Quantity"
             type="number"

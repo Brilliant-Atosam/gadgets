@@ -10,7 +10,7 @@ const moment = require("moment");
 require("dotenv").config();
 // DB CONNECTION
 
-mongoose.connect(process.env.DB_CONNECTION_STRING_ATLAS, (err) => {
+mongoose.connect(process.env.DB_CONNECTION_STRING, (err) => {
   err ? console.log(err.message) : console.log("Connected to DB");
 });
 server.use(express.json());

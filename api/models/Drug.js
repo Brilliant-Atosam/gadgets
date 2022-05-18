@@ -9,13 +9,7 @@ const drugSchema = new mongoose.Schema({
   dosage: String,
   price: Number,
   img: String,
-  createdAt: {
-    type: String,
-    default: moment(new Date()).format("ddd DD/M/YY h:mm:ss"),
-  },
-  updatedAt: {
-    type: String,
-    default: moment(new Date()).format("ddd DD/M/YY h:mm:ss"),
-  },
+  createdAt: String,
+  updatedAt: String,
 });
 module.exports = mongoose.model("Drug", drugSchema);
