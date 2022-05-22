@@ -6,15 +6,15 @@ const QuickStat = ({ dailySales, monthlySales, annualSales, overallSales }) => {
       <div className="quick-stat-container">
         <div className="quick-stat-item">
           <span className="number">&#8373;{dailySales}</span>
-          <span className="desc">Today</span>
+          <span className="desc">{moment().format('ddd, DD MMM')}</span>
         </div>
         <div className="quick-stat-item">
           <span className="number">&#8373;{monthlySales}</span>
-          <span className="desc">{moment().format('MMMM, yy')}</span>
+          <span className="desc">{moment().format('MMM, YYYY')}</span>
         </div>
         <div className="quick-stat-item">
           <span className="number">&#8373;{annualSales}</span>
-          <span className="desc">This year</span>
+          <span className="desc">{moment().format('YYYY')}</span>
         </div>
         <div className="quick-stat-item">
           <span className="number">&#8373;{overallSales}</span>

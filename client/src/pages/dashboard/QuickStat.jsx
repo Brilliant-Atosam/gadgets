@@ -18,13 +18,13 @@ const QuickStat = ({ drugsNum, outStock, dailySales, monthlySales }) => {
           <span className="number">
             <b>&#8373;{dailySales}</b>
           </span>
-          <span className="desc">Today</span>
+          <span className="desc">{moment().format('ddd, D MMM')}</span>
         </div>
         <div className="quick-stat-item">
           <span className="number">
             <b>&#8373;{monthlySales}</b>
           </span>
-          <span className="desc">This month</span>
+          <span className="desc">{moment().format('MMM, YYYY')}</span>
         </div>
       </div>
     </div>

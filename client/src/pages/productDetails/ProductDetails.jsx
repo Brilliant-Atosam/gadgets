@@ -48,35 +48,31 @@ const ProductDetails = () => {
       : 0
   );
 
-  const salesToday = salesHistory?.filter((sale) =>
-    sale?.createdAt?.indexOf(moment().format("DD/MM/YYYY") )> -1
+  const salesToday = salesHistory?.filter(
+    (sale) => sale?.createdAt?.indexOf(moment().format("DD/MM/YYYY")) > -1
   );
+  let dailySalesFigures = [];
+  salesToday?.forEach((sale) => dailySalesFigures.push(sale.cost));
   let [dailySalesFigure, setDailySalesFigure] = useState(
-    salesHistory?.length > 1
-      ? salesToday?.reduce((a, b) => a.cost + b.cost)
-      : salesToday?.length === 1
-      ? salesToday[0].cost
-      : 0
+    dailySalesFigures?.length > 0 ? salesToday?.reduce((a, b) => a + b) : 0
   );
-  const salesMonth = salesHistory?.filter((sale) =>
-    sale?.createdAt?.indexOf(moment().format("/MM/YYYY") )> -1
+  const salesMonth = salesHistory?.filter(
+    (sale) => sale?.createdAt?.indexOf(moment().format("/MM/YYYY")) > -1
   );
+  let monthlySalesFigures = [];
+  salesMonth?.forEach((sale) => monthlySalesFigures.push(sale.cost));
   let [monthlySalesFigure, setMonthlySalesFigure] = useState(
-    salesHistory?.length > 1
-      ? salesMonth?.reduce((a, b) => a.cost + b.cost)
-      : salesMonth?.length === 1
-      ? salesMonth[0].cost
+    monthlySalesFigures?.length > 0
+      ? monthlySalesFigures?.reduce((a, b) => a + b)
       : 0
   );
-  let salesYear = salesHistory?.filter((sale) =>
-    sale?.createdAt?.indexOf(moment().format("/YYYY") )> -1
+  let salesYear = salesHistory?.filter(
+    (sale) => sale?.createdAt?.indexOf(moment().format("/YYYY")) > -1
   );
+  let annualSalesFigures = [];
+  salesYear?.forEach((sale) => annualSalesFigures.push(sale.cost));
   let [annualSalesFigure, setAnnualSalesFigure] = useState(
-    salesHistory?.length > 1
-      ? salesYear?.reduce((a, b) => a.cost + b.cost)
-      : salesYear?.length === 1
-      ? salesYear[0].cost
-      : 0
+    annualSalesFigures?.length > 0 ? annualSalesFigures?.reduce((a, b) => a + b) : 0
   );
   const deleteDrug = async () => {
     try {
@@ -232,7 +228,7 @@ const ProductDetails = () => {
                 </div>
               </div>
               <div className="drug-info-right">
-              <div className="drug-info-key-vale">
+                <div className="drug-info-key-vale">
                   <span className="key">Stock</span>:
                   <span className="value">{drug?.stock}</span>
                 </div>
