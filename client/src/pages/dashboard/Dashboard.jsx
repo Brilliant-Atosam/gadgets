@@ -61,8 +61,8 @@ const Dashboard = () => {
   const [drugs, setDrugs] = useState(allDrugs);
   const [sales, setSales] = useState(allSales);
   const [drugsNum, setDrugsNum] = useState(drugs?.length);
-  const salesToday = sales?.filter((sale) =>
-    sale.createdAt?.indexOf(moment().format("DD/MM/YYYY") )> -1
+  const salesToday = sales?.filter(
+    (sale) => sale.createdAt?.indexOf(moment().format("DD/MM/YYYY")) > -1
   );
   let salesTodayFigures = [];
   salesToday?.forEach((sale) => salesTodayFigures.push(sale.cost));
@@ -71,8 +71,8 @@ const Dashboard = () => {
     salesTodayFigures.length > 0 ? salesTodayFigures.reduce((a, b) => a + b) : 0
   );
 
-  const salesMonth = sales?.filter((sale) =>
-    sale?.createdAt?.indexOf(moment().format("MM/YYYY") )> -1
+  const salesMonth = sales?.filter(
+    (sale) => sale?.createdAt?.indexOf(moment().format("MM/YYYY")) > -1
   );
   let monthlySalesFigures = [];
   salesMonth?.forEach((sale) => monthlySalesFigures.push(sale.cost));
@@ -408,7 +408,12 @@ const Dashboard = () => {
                 </Link>
               </div>
             </div>
-            <DataTable rows={[...drugs]?.sort((a,b) => a.name.toLowerCase() > b.name.toLowerCase() ? 1:-1)} columns={drugsColumn} />
+            <DataTable
+              rows={[...drugs]?.sort((a, b) =>
+                a.name.toLowerCase() > b.name.toLowerCase() ? 1 : -1
+              )}
+              columns={drugsColumn}
+            />
           </div>
         </div>
         <div className="dash-right chart">
@@ -418,7 +423,12 @@ const Dashboard = () => {
               <ArrowForwardIos className="icon-link" />
             </Link>
           </div>
-          <DataTable rows={[...sales]?.sort((a,b)=> a.createdAt.toString() > b.createdAt.toString() ? -1 : 1)} columns={salesColumn} />
+          <DataTable
+            rows={[...sales]?.sort((a, b) =>
+              a.createdAt.toString() > b.createdAt.toString() ? -1 : 1
+            )}
+            columns={salesColumn}
+          />
         </div>
       </div>
     </>
