@@ -27,9 +27,11 @@ router.post("/", async (req, res) => {
         dosage,
         price,
         img,
-        createdAt: moment().format("ddd DD/M/YY h:mm:ss"),
-        updatedAt: moment().format("ddd DD/M/YY h:mm:ss"),
-        id: Math.floor(10000 + Math.random() * 10000),
+        createdAt: moment().format("DD/MM/YYYY h:mm:ss"),
+        updatedAt: moment().format("DD/M/YYYY h:mm:ss"),
+        id: (Math.floor(Math.random() * 100000) + 100000)
+        .toString()
+        .substring(1),
       });
       await newDrug.save();
       res.status(200).json("Drug has been added successfully");

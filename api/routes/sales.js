@@ -23,7 +23,7 @@ router.post("/", async (req, res) => {
         drug_name,
         quantity,
         cost,
-        createdAt: moment().format("ddd DD/M/YY h:mm:ss"),
+        createdAt: moment().format("DD/MM/YYYY h:mm:ss"),
       });
       await newSales.save();
       await drug.updateOne({ stock: drug.stock - quantity });

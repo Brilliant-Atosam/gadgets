@@ -21,7 +21,7 @@ const Sales = () => {
   const dispatch = useDispatch();
   const salesRecords = useSelector((state) => state.sales.Sales);
   const dailySales = salesRecords?.filter((sale) =>
-    sale.createdAt?.indexOf(moment().format("DD-MM-YYYY") > -1)
+    sale.createdAt?.indexOf(moment().format("DD/MM/YYYY")) > -1
   );
   let salesTodayFigures = [];
   dailySales?.forEach((sale) => salesTodayFigures.push(sale.cost));
@@ -29,7 +29,7 @@ const Sales = () => {
     salesTodayFigures.length > 0 ? salesTodayFigures.reduce((a, b) => a + b) : 0
   );
   const salesMonth = salesRecords?.filter((sale) =>
-    sale?.createdAt?.indexOf(moment().format("-MM-YYYY") > -1)
+    sale?.createdAt?.indexOf(moment().format("/MM/YYYY") )> -1
   );
   let monthlySalesFigures = [];
   salesMonth?.forEach((sale) => monthlySalesFigures.push(sale.cost));
@@ -40,7 +40,7 @@ const Sales = () => {
       : 0
   );
   const salesYear = salesRecords?.filter((sale) =>
-    sale?.createdAt?.indexOf(moment().format("-YYYY") > -1)
+    sale?.createdAt?.indexOf(moment().format("/YYYY") )> -1
   );
   let annualSalesFigures = [];
   salesYear?.forEach((sale) => annualSalesFigures.push(sale.cost));
@@ -54,10 +54,6 @@ const Sales = () => {
     totalSalesFigures.length > 0
       ? totalSalesFigures.reduce((a, b) => a + b)
       : 0;
-  console.log(dailySalesFigure);
-  console.log();
-  console.log();
-  console.log();
   const [loading, setLoading] = useState(false);
   // REFRESHING DATA
   const handleRefresh = async () => {
@@ -70,7 +66,6 @@ const Sales = () => {
     } catch (err) {
       dispatch(salesFailure());
     }
-    setLoading(false);
   };
   return (
     <>
@@ -92,8 +87,8 @@ const Sales = () => {
             </div>
             {
               <DataTable
-                rows={[...salesRecords].sort((a, b) =>
-                  a.createdAt > b.createdAt ? -1 : 1
+                rows={[...salesRecords]?.sort((a, b) =>
+                  a.createdAt.toString() > b.createdAt.toString() ? -1 : 1
                 )}
                 columns={salesColumn}
               />

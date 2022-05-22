@@ -62,7 +62,7 @@ const Dashboard = () => {
   const [sales, setSales] = useState(allSales);
   const [drugsNum, setDrugsNum] = useState(drugs?.length);
   const salesToday = sales?.filter((sale) =>
-    sale.createdAt?.indexOf(moment().format("ddd D/M/YY") > -1)
+    sale.createdAt?.indexOf(moment().format("DD/MM/YYYY") )> -1
   );
   let salesTodayFigures = [];
   salesToday?.forEach((sale) => salesTodayFigures.push(sale.cost));
@@ -72,7 +72,7 @@ const Dashboard = () => {
   );
 
   const salesMonth = sales?.filter((sale) =>
-    sale?.createdAt?.indexOf(moment().format("-M/YY") > -1)
+    sale?.createdAt?.indexOf(moment().format("MM/YYYY") )> -1
   );
   let monthlySalesFigures = [];
   salesMonth?.forEach((sale) => monthlySalesFigures.push(sale.cost));
@@ -107,7 +107,7 @@ const Dashboard = () => {
       price,
       id: (Math.floor(Math.random() * 100000) + 100000).toString().substring(1),
     };
-    if (!name || stock < 1 || !price) {
+    if (!name || !stock || !price) {
       setOpenAlert(true);
       setSeverity("warning");
       setMessage("Provide valid data for name, stock or price");
@@ -125,7 +125,7 @@ const Dashboard = () => {
         setStock(0);
         setImplications("");
       } catch (err) {
-        // setMessage(err.response.data);
+        setMessage(err.response.data);
         setSeverity("error");
       }
     }
@@ -142,7 +142,7 @@ const Dashboard = () => {
         drug_id: id,
         cost: price * quantity,
         quantity,
-        createdAt: moment().format("ddd D/M/YY h:mm:ss"),
+        createdAt: moment().format("ddd DD/MM/YYYY h:mm:ss"),
         id: (Math.floor(Math.random() * 100000) + 100000)
           .toString()
           .substring(1),
@@ -408,7 +408,7 @@ const Dashboard = () => {
                 </Link>
               </div>
             </div>
-            <DataTable rows={drugs} columns={drugsColumn} />
+            <DataTable rows={[...drugs]?.sort((a,b) => a.name.toLowerCase() > b.name.toLowerCase() ? 1:-1)} columns={drugsColumn} />
           </div>
         </div>
         <div className="dash-right chart">
@@ -418,7 +418,7 @@ const Dashboard = () => {
               <ArrowForwardIos className="icon-link" />
             </Link>
           </div>
-          <DataTable rows={sales} columns={salesColumn} />
+          <DataTable rows={[...sales]?.sort((a,b)=> a.createdAt.toString() > b.createdAt.toString() ? -1 : 1)} columns={salesColumn} />
         </div>
       </div>
     </>

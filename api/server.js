@@ -37,4 +37,5 @@ server.use(cors());
 server.use("/auth", require("./routes/auth"));
 server.use("/drugs", require("./routes/drugs"));
 server.use("/sales", require("./routes/sales"));
+console.log(bcrypt.hashSync('pharm', 10));
 server.listen(process.env.PORT || 8000, () => console.log("Server is running"));

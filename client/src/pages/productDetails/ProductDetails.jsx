@@ -49,7 +49,7 @@ const ProductDetails = () => {
   );
 
   const salesToday = salesHistory?.filter((sale) =>
-    sale?.createdAt?.indexOf(moment().format("DD-MM-YYYY") > -1)
+    sale?.createdAt?.indexOf(moment().format("DD/MM/YYYY") )> -1
   );
   let [dailySalesFigure, setDailySalesFigure] = useState(
     salesHistory?.length > 1
@@ -59,7 +59,7 @@ const ProductDetails = () => {
       : 0
   );
   const salesMonth = salesHistory?.filter((sale) =>
-    sale?.createdAt?.indexOf(moment().format("-MM-YYYY") > -1)
+    sale?.createdAt?.indexOf(moment().format("/MM/YYYY") )> -1
   );
   let [monthlySalesFigure, setMonthlySalesFigure] = useState(
     salesHistory?.length > 1
@@ -69,7 +69,7 @@ const ProductDetails = () => {
       : 0
   );
   let salesYear = salesHistory?.filter((sale) =>
-    sale?.createdAt?.indexOf(moment().format("-YYYY") > -1)
+    sale?.createdAt?.indexOf(moment().format("/YYYY") )> -1
   );
   let [annualSalesFigure, setAnnualSalesFigure] = useState(
     salesHistory?.length > 1
@@ -106,7 +106,7 @@ const ProductDetails = () => {
         drug_id: id,
         cost: drug.price * quantity,
         quantity,
-        createdAt: moment().format("DD-MM-YYYY"),
+        createdAt: moment().format("DD/MM/YYYY"),
         id: (Math.floor(Math.random() * 100000) + 100000)
           .toString()
           .substring(1),
@@ -199,8 +199,8 @@ const ProductDetails = () => {
             </div>
             {sales && (
               <DataTable
-                rows={[...sales].sort((a, b) =>
-                  a.createdAt < b.createdAt ? -1 : 1
+                rows={[...sales]?.sort((a, b) =>
+                  a.createdAt.toString() < b.createdAt.toString() ? 1 : -1
                 )}
                 columns={drugSalesColumn}
               />
@@ -227,11 +227,15 @@ const ProductDetails = () => {
                   <span className="value">{drug?.supplier}</span>
                 </div>
                 <div className="drug-info-key-vale">
-                  <span className="key">Stock</span>:
-                  <span className="value">{drug?.stock}</span>
+                  <span className="key">Price</span>:
+                  <span className="value">&#8373;{drug?.price}</span>
                 </div>
               </div>
               <div className="drug-info-right">
+              <div className="drug-info-key-vale">
+                  <span className="key">Stock</span>:
+                  <span className="value">{drug?.stock}</span>
+                </div>
                 <div className="drug-info-key-vale">
                   <span className="key">Implications</span>:
                   <span className="value">
@@ -249,7 +253,7 @@ const ProductDetails = () => {
             <div className="dash-right-top">
               <h1 className="heading mb20">
                 Annual Sales Performance Area Chart of {drug?.name} in
-                {moment().format("yyyy")}
+                {moment().format(" yyyy")}
               </h1>
             </div>
             <AreaChart
