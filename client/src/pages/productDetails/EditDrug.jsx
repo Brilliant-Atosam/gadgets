@@ -13,19 +13,21 @@ import { request } from "../../request";
 import { useParams } from "react-router-dom";
 import { useSelector } from "react-redux";
 import AlertComponent from "../../components/Alert";
+import moment from "moment";
 export default function FormDialog({ open, handleClose }) {
   const { id } = useParams();
-  const drug = useSelector((state) =>
+  let Drug = useSelector((state) =>
     state.drugs.Drugs?.find((d) => d.id === id)
   );
+  const [drug, setDrug] = useState(Drug);
   const [name, setName] = useState(drug.name);
   const [supplier, setSupplier] = useState(drug.supplier);
   const [implications, setImplications] = useState(
     drug.implications.toString()
   );
+  const [expiry, setExpiry] = useState(drug.expiry);
   const [dosage, setDosage] = useState(drug.dosage);
   const [price, setPrice] = useState(drug.price);
-  const [file, setFile] = useState();
   // ALERT INFO
   const [openAlert, setOpenAlert] = useState(false);
   const [message, setMessage] = useState("");
@@ -38,10 +40,13 @@ export default function FormDialog({ open, handleClose }) {
       implications: implications.split(", "),
       dosage,
       price,
+      expiry: moment(expiry).format("MM/DD/YYYY"),
+      id: (Math.floor(Math.random() * 100000) + 100000).toString().substring(1),
     };
     try {
-      const res = await request.put(`/drugs/${id}`, drugDetails);
-      setMessage(res.data);
+      await request.put(`/drugs/${id}`, drugDetails);
+      setDrug(drugDetails);
+      
     } catch (err) {
       setMessage(err.response.data);
       setSeverity("error");
@@ -111,23 +116,14 @@ export default function FormDialog({ open, handleClose }) {
             onChange={(e) => setDosage(e.target.value)}
             className="dial-input"
           />
-          <label htmlFor="drug-img">
-            <AddPhotoAlternate className="file-picker" />
-          </label>
           <TextField
+            variant="outlined"
             margin="dense"
-            id="drug-img"
-            type="file"
-            accept=".png, .jpg, .jpeg"
-            onChange={(e) => setFile(e.target.files[0])}
+            fullWidth
+            label="Expiry date"
+            type="date"
+            onChange={(e) => setExpiry(e.target.value)}
           />
-          {file && (
-            <img
-              alt={name}
-              className="img-preview"
-              src={URL.createObjectURL(file)}
-            />
-          )}
         </DialogContent>
         <DialogActions>
           <Button onClick={handleClose}>

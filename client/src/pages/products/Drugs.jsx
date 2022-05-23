@@ -2,14 +2,13 @@ import {
   ArrowForwardIos,
   MedicalServices,
   Restore,
-  CancelOutlined,
   CurrencyExchange,
-  AddPhotoAlternate,
   Add,
   Edit,
   Visibility,
   Close,
   Search,
+  RestartAlt,
 } from "@mui/icons-material";
 import moment from "moment";
 import FormDialog from "../dashboard/AddDrug";
@@ -32,6 +31,8 @@ import Restock from "../dashboard/Restock";
 import Navbar from "../../components/nav/Navbar";
 import Loading from "../../components/Loading";
 import AlertComponent from "../../components/Alert";
+import SellDrugForm from "../dashboard/Sell";
+import AddDrugForm from "../dashboard/AddDrug";
 const Drugs = () => {
   const dispatch = useDispatch();
   useEffect(() => {
@@ -46,10 +47,10 @@ const Drugs = () => {
       dispatch(drugsFailure(err.response.data));
     }
   }, [dispatch]);
+  const [openAdd, setOpenAdd] = useState(false);
   const allDrugs = useSelector((state) => state.drugs.Drugs);
   const [drugs, setDrugs] = useState(allDrugs);
   const [search, setSearch] = useState("");
-  const [openDial, setOpenDial] = useState(false);
   const [openSell, setOpenSell] = useState(false);
   const [openStock, setOpenStock] = useState(false);
   const [quantity, setQuantity] = useState(0);
@@ -57,6 +58,7 @@ const Drugs = () => {
   const [stock, setStock] = useState();
   const [price, setPrice] = useState();
   const [id, setId] = useState("");
+  const [expiry, setExpiry] = useState("");
   const [supplier, setSupplier] = useState("");
   const [implications, setImplications] = useState("");
   const [dosage, setDosage] = useState("");
@@ -77,6 +79,7 @@ const Drugs = () => {
         implications: implications.split(", "),
         dosage,
         price,
+        expiry,
         id: (Math.floor(Math.random() * 100000) + 100000)
           .toString()
           .substring(1),
@@ -99,65 +102,120 @@ const Drugs = () => {
   };
   //   SELL DRUG
   const sellDrug = async () => {
-    const salesDetails = {
-      drug_name: name,
-      drug_id: id,
-      cost: price * quantity,
-      quantity,
-      date: moment().format("DD-MM-YYYY"),
-      id: (Math.floor(Math.random() * 100000) + 100000).toString().substring(1),
-    };
-    const res = await request.post("/sales", salesDetails);
-    alert(res.data);
-  };
-  const handleClose = () => {
-    setOpenDial(false);
+    if (!quantity || quantity < 1) {
+      setSeverity("error");
+      setMessage("Enter valid quantity");
+      setOpenAlert(true);
+    } else {
+      const salesDetails = {
+        drug_name: name,
+        drug_id: id,
+        cost: price * quantity,
+        quantity,
+        createdAt: moment().format("DD/MM/YYYY h:mm:ss"),
+        id: (Math.floor(Math.random() * 100000) + 100000)
+          .toString()
+          .substring(1),
+      };
+      try {
+        const res = await request.post("/sales", salesDetails);
+        setQuantity(0);
+        setMessage(res.data);
+        setOpenAlert(true);
+      } catch (err) {
+        setOpenAlert(true);
+        setMessage(err.response.data);
+        setSeverity("error");
+      }
+      setOpenSell(false);
+    }
   };
 
+
   const drugsColumn = [
-    { field: "id", headerName: "ID", width: 70 },
-    { field: "name", headerName: "Drugs name", width: 230 },
-    { field: "stock", headerName: "Stock", width: 130 },
-    { field: "price", headerName: "Price", width: 130 },
+    {
+      field: "name",
+      headerName: "Drug",
+      width: 200,
+      renderCell: (params) => (
+        <p
+          className={
+            new Date(params.row.expiry) <= new Date()
+              ? "expired"
+              : params.row.stock < 0
+              ? "out-stock"
+              : "drug-name"
+          }
+        >
+          {params.row.name}
+        </p>
+      ),
+    },
     {
       headerName: "Action",
-      width: 200,
+      width: 170,
       renderCell: (params) => (
         <div className="action-btn">
           <Link to={`/drugs/${params.row.id}`}>
             <Visibility className="action-icon" />
           </Link>
-          <CurrencyExchange
-            className="action-icon"
-            onClick={() => {
-              setName(params.row.name);
-              setPrice(params.row.price);
-              setId(params.row.id);
-              setOpenSell(true);
-              setStock(params.row.stock);
-            }}
-          />
-          <Restore
-            className="action-icon mr10"
+
+          <RestartAlt
+            className="action-icon "
             onClick={() => {
               setName(params.row.name);
               setId(params.row.id);
+              setExpiry(params.row.expiry);
               setOpenStock(true);
-              handleRestock = { handleRestock };
             }}
           />
+          {new Date(params.row.expiry) > new Date() && (
+            <CurrencyExchange
+              className="action-icon"
+              onClick={() => {
+                setName(params.row.name);
+                setPrice(params.row.price);
+                setId(params.row.id);
+                setOpenSell(true);
+                setStock(params.row.stock);
+              }}
+            />
+          )}
         </div>
+      ),
+    },
+
+    { field: "price", headerName: "Price", width: 100 },
+    { field: "stock", headerName: "Stock", width: 130 },
+    { field: "id", headerName: "ID", width: 70 },
+    {
+      headerName: "Status",
+      field: "expiry",
+      width: 100,
+      renderCell: (params) => (
+        <>
+          {new Date(params.row.expiry) < new Date() ? (
+            <span className="expired">Expired</span>
+          ) : (
+            <span className="active">Active</span>
+          )}
+        </>
       ),
     },
   ];
   const handleRestock = async () => {
     try {
       const res = await request.put("/drugs/restock/" + id, { stock });
-      alert(res.data);
+      setMessage(res.data);
+      setSeverity("success");
+      setOpenAlert(true);
       setOpenStock(false);
       setStock(0);
-      window.location.reload();
-    } catch (err) {}
+    } catch (err) {
+      setMessage(err.response.data);
+      setSeverity("error");
+      setOpenAlert(true);
+    }
   };
   const [loading, setLoading] = useState(false);
   // REFRESHING DATA
@@ -178,42 +236,44 @@ const Drugs = () => {
     <>
       <Navbar refresh={() => handleRefresh()} />
       <Loading open={loading} />
-      <FormDialog open={openDial} handleClose={handleClose} />
+      <AlertComponent
+        open={openAlert}
+        severity={severity}
+        message={message}
+        close={() => {
+          setOpenAlert(false);
+        }}
+      />
       <Restock
         openStock={openStock}
         handleClose={() => setOpenStock(false)}
         name={name}
-        restockEvent={handleRestock}
+        restockEvent={(e) => setStock(e.target.value)}
+        resetExpiry={(e) => setExpiry(e.target.value)}
+        handleRestock={() => handleRestock()}
       />
-      <Dialog open={openSell} onClose={() => setOpenSell(false)}>
-        <DialogTitle className="dial-heading">SELL DRUG</DialogTitle>
-        <DialogContent>
-          <DialogContentText>{name}</DialogContentText>
-          <TextField
-            autoFocus
-            margin="dense"
-            label="Quantity"
-            type="number"
-            fullWidth
-            variant="outlined"
-            className="dial-input"
-            onChange={(e) => setQuantity(e.target.value)}
-          />
-          <DialogContentText>Stock: {stock}</DialogContentText>
-          <DialogContentText>Price: {price}</DialogContentText>
-          <DialogContentText>
-            Total cost: <b>{price * quantity}</b>
-          </DialogContentText>
-        </DialogContent>
-        <DialogActions>
-          <Button onClick={() => setOpenSell(false)}>
-            <CancelOutlined className="dial-icon cancel" />
-          </Button>
-          <Button onClick={() => sellDrug()}>
-            <CurrencyExchange className="dial-icon" />
-          </Button>
-        </DialogActions>
-      </Dialog>
+      <SellDrugForm
+        open={openSell}
+        quantity={quantity}
+        handleClose={() => setOpenSell(false)}
+        drugName={name}
+        price={price}
+        quantityEvent={(e) => setQuantity(e.target.value)}
+        handleSellDrug={() => sellDrug()}
+        stock={stock}
+      />
+      <AddDrugForm
+        open={openAdd}
+        handleClose={() => setOpenAdd(false)}
+        nameEvent={(e) => setName(e.target.value)}
+        stockEvent={(e) => setStock(e.target.value)}
+        supplierEvent={(e) => setSupplier(e.target.value)}
+        implicationsEvent={(e) => setImplications(e.target.value)}
+        priceEvent={(e) => setPrice(e.target.value)}
+        dosageEvent={(e) => setDosage(e.target.value)}
+        expiryEvent={(e) => setExpiry(e.target.value)}
+        handleAdd={() => handleAdd()}
+      />
       <div className="dashboard-container">
         <div className="dash-left">
           <div className="drugs-container drugs-page">
@@ -331,7 +391,7 @@ const Drugs = () => {
             <div className="head-links">
               <MedicalServices
                 className="icon-link mr10"
-                onClick={() => setOpenDial(true)}
+                onClick={() => setOpenAdd(true)}
               />
               <Link to="/drugs">
                 <ArrowForwardIos className="icon-link" />

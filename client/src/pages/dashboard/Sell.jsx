@@ -1,4 +1,3 @@
-import { useState } from "react";
 import {
   TextField,
   Button,
@@ -8,17 +7,17 @@ import {
   DialogContentText,
   DialogTitle,
 } from "@mui/material";
-import { CancelOutlined, CurrencyExchange } from "@mui/icons-material";
+import { Close, CurrencyExchange } from "@mui/icons-material";
 
-export default function SellDial({
+export default function SellDrugForm({
   open,
   handleClose,
   drugName,
   stock,
   price,
-  event,
   quantity,
-  handleSellDrug
+  quantityEvent,
+  handleSellDrug,
 }) {
   return (
     <div>
@@ -34,7 +33,7 @@ export default function SellDial({
             fullWidth
             variant="outlined"
             className="dial-input"
-            onChange={event}
+            onChange={quantityEvent}
           />
           <DialogContentText>Stock: {stock}</DialogContentText>
           <DialogContentText>Price: &#8373;{price}</DialogContentText>
@@ -44,7 +43,7 @@ export default function SellDial({
         </DialogContent>
         <DialogActions>
           <Button onClick={handleClose}>
-            <CancelOutlined className="dial-icon cancel" />
+            <Close className="dial-icon cancel" />
           </Button>
           <Button onClick={handleSellDrug}>
             <CurrencyExchange className="dial-icon" />

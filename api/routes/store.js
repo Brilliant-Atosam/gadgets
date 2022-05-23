@@ -1,48 +1,38 @@
 const router = require("express").Router();
+const bcrypt = require("bcryptjs/dist/bcrypt");
 const moment = require("moment");
-const Drug = require("../models/Drug");
+// const { set } = require("mongoose");
+const Store = require("../models/Store");
 // GET ALL DRUGS
 router.get("/", async (req, res) => {
-  const { storeId } = req.body;
   try {
-    const drugs = await Drug.find({ storeId });
+    const drugs = await Drug.find();
     res.status(200).json(drugs);
   } catch (err) {
     res.status(500).json(err.message);
   }
 });
-// ADD
+// ADD Store
 router.post("/", async (req, res) => {
-  const {
-    name,
-    stock,
-    supplier,
-    dosage,
-    implications,
-    price,
-    storeId,
-    expiry,
-  } = req.body;
-  try {
-    const newDrug = new Drug({
-      name,
-      stock,
-      supplier,
-      implications,
-      dosage,
-      price,
-      storeId,
-      expiry,
-      createdAt: moment().format("DD/MM/YYYY h:mm:ss"),
-      updatedAt: moment().format("DD/M/YYYY h:mm:ss"),
-      id: (Math.floor(Math.random() * 100000) + 100000).toString().substring(1),
-    });
-    await newDrug.save();
-    res.status(200).json("Drug has been added successfully");
-  } catch (err) {
-    res.status(500).json("Something went wrong!");
-    console.log(err.message);
-  }
+  const { name, password, phone } = req.body;
+ 
+    try {
+      const newStore = new Store({
+        name, 
+        password: await bcrypt.hash(password, 10), 
+        phone,
+        createdAt: moment().format("DD/MM/YYYY h:mm:ss"),
+        id: (Math.floor(Math.random() * 100000) + 100000)
+        .toString()
+        .substring(1),
+      });
+      await newStore.save();
+      res.status(200).json(newStore);
+    } catch (err) {
+      res.status(500).json("Something went wrong!");
+      console.log(err.message);
+    }
+  
 });
 // EDIT DRUG
 router.put("/:id", async (req, res) => {

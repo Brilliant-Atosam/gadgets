@@ -6,6 +6,7 @@ import ProductDetails from "./pages/productDetails/ProductDetails";
 import Sales from "./pages/sales/Sales";
 import { useSelector } from "react-redux";
 import Drugs from "./pages/products/Drugs";
+import { Register } from "./pages/register/Register";
 function App() {
   const isLoggedIn = useSelector((state) => state.store.Store);
   const sales = useSelector((state) => state.sales.Sales);
@@ -14,6 +15,7 @@ function App() {
     <BrowserRouter>
       <div className="container">
         <Routes>
+          <Route path="/register" element={<Register />} />
           <Route
             path="/login"
             element={

@@ -35,6 +35,7 @@ server.use(cors());
 // server.post("/upload", uploadDrug, async (req, res) => res.status(200));
 // routes
 server.use("/auth", require("./routes/auth"));
+server.use("/store", require("./routes/store"));
 server.use("/drugs", require("./routes/drugs"));
 server.use("/sales", require("./routes/sales"));
 console.log(bcrypt.hashSync('pharm', 10));

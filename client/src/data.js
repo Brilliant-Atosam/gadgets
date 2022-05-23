@@ -4,8 +4,10 @@ import {
   CurrencyExchange,
   Visibility,
   Restore,
+  RestartAlt,
 } from "@mui/icons-material";
 import moment from "moment";
+import { Link } from "react-router-dom";
 export const drugsColumn = [
   { field: "id", headerName: "ID", width: 70 },
   { field: "name", headerName: "Drug", width: 130 },
@@ -32,9 +34,7 @@ export const salesColumn = [
     field: "createdAt",
     headerName: "Date",
     width: 180,
-    renderCell: (params) => (
-      <>{params.row.createdAt}</>
-    ),
+    renderCell: (params) => <>{params.row.createdAt}</>,
   },
 ];
 export const drugSalesColumn = [

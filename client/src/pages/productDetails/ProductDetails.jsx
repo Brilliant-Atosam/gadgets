@@ -54,8 +54,9 @@ const ProductDetails = () => {
   let dailySalesFigures = [];
   salesToday?.forEach((sale) => dailySalesFigures.push(sale.cost));
   let [dailySalesFigure, setDailySalesFigure] = useState(
-    dailySalesFigures?.length > 0 ? salesToday?.reduce((a, b) => a + b) : 0
+    dailySalesFigures.length > 0 ? dailySalesFigures.reduce((a, b) => a + b) : 0
   );
+  console.log(dailySalesFigure);
   const salesMonth = salesHistory?.filter(
     (sale) => sale?.createdAt?.indexOf(moment().format("/MM/YYYY")) > -1
   );
@@ -72,7 +73,9 @@ const ProductDetails = () => {
   let annualSalesFigures = [];
   salesYear?.forEach((sale) => annualSalesFigures.push(sale.cost));
   let [annualSalesFigure, setAnnualSalesFigure] = useState(
-    annualSalesFigures?.length > 0 ? annualSalesFigures?.reduce((a, b) => a + b) : 0
+    annualSalesFigures?.length > 0
+      ? annualSalesFigures?.reduce((a, b) => a + b)
+      : 0
   );
   const deleteDrug = async () => {
     try {
@@ -181,10 +184,12 @@ const ProductDetails = () => {
             <div className="drugs-top">
               <h1 className="heading">Drug Sales history</h1>
               <div className="head-links">
-                <CurrencyExchange
-                  className="icon-link mr10"
-                  onClick={() => setOpenSell(true)}
-                />
+                {new Date(drug.expiry) > new Date() && (
+                  <CurrencyExchange
+                    className="icon-link mr10"
+                    onClick={() => setOpenSell(true)}
+                  />
+                )}
                 <RestartAlt className="icon-link mr10" />
                 <Edit className="icon-link" onClick={() => setOpenEdit(true)} />
                 <Delete
@@ -207,7 +212,11 @@ const ProductDetails = () => {
           <div className="dash-right-drug-info mb20">
             <div className="drug-info-top">
               <h1 className="heading">Drug Details</h1>
-              <button className="btn" onClick={() => setOpenSell(true)}>
+              <button
+                className="btn"
+                onClick={() => setOpenSell(true)}
+                disabled={new Date(drug.expiry) < new Date()}
+              >
                 Sell
                 <CurrencyExchange className="icon-link" />
               </button>
@@ -226,11 +235,21 @@ const ProductDetails = () => {
                   <span className="key">Price</span>:
                   <span className="value">&#8373;{drug?.price}</span>
                 </div>
-              </div>
-              <div className="drug-info-right">
                 <div className="drug-info-key-vale">
                   <span className="key">Stock</span>:
                   <span className="value">{drug?.stock}</span>
+                </div>
+              </div>
+              <div className="drug-info-right">
+                <div className="drug-info-key-vale">
+                  <span className="key">Status</span>:
+                  <span className="value">
+                    {new Date(drug?.expiry) < new Date() ? (
+                      <span className="expired">Expired</span>
+                    ) : (
+                      <span className="active">Active</span>
+                    )}
+                  </span>
                 </div>
                 <div className="drug-info-key-vale">
                   <span className="key">Implications</span>:
@@ -241,6 +260,10 @@ const ProductDetails = () => {
                 <div className="drug-info-key-vale">
                   <span className="key">Dosage</span>:
                   <span className="value">{drug?.dosage}</span>
+                </div>
+                <div className="drug-info-key-vale">
+                  <span className="key">Expiry</span>:
+                  <span className="value">{drug?.expiry}</span>
                 </div>
               </div>
             </div>

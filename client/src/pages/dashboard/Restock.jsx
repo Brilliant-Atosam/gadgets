@@ -1,4 +1,4 @@
-import { CancelOutlined, Check } from "@mui/icons-material";
+import { CancelOutlined, Check, Close } from "@mui/icons-material";
 import {
   Button,
   Dialog,
@@ -35,7 +35,7 @@ const Restock = ({
       </DialogContent>
       <DialogActions>
         <Button onClick={handleClose}>
-          <CancelOutlined className="dial-icon cancel" />
+          <Close className="dial-icon cancel" />
         </Button>
         <Button onClick={handleRestock}>
           <Check className="dial-icon" />

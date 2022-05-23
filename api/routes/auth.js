@@ -1,14 +1,16 @@
 const router = require("express").Router();
 const bcrypt = require("bcryptjs");
+const Store = require("../models/Store");
 // LOGIN
 router.post("/", async (req, res) => {
-  const { email, password } = req.body;
+  const { id, password } = req.body;
   try {
-    const isEmail = await bcrypt.compare(email, process.env.LOGIN_EMAIL),
-      isPassword = await bcrypt.compare(password, process.env.LOGIN_PASSWORD);
-    isEmail && isPassword
-      ? res.json("Logged")
-      : res.status(401).json("Invalid login credentials");
+  const store = await Store.findOne({id})
+  if(!store || !bcrypt.compare(password, store.password)){
+    res.status(401).json('Invalid login details')
+  } else{
+res.json("Logged")
+  }
   } catch (err) {
     res.status(500).json("Oooops! Please try again");
     console.log(err.messsages);

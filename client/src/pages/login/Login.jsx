@@ -8,10 +8,12 @@ import { LoginStart, LoginSuccess, LoginFailure } from "../../redux/login";
 import { useDispatch } from "react-redux";
 import { drugsFailure, drugsStart, drugsSuccess } from "../../redux/drugs";
 import { salesFailure, salesStart, salesSuccess } from "../../redux/sales";
+import { Link } from "react-router-dom";
 export const Login = () => {
   const dispatch = useDispatch();
 
-  const [email, setEmail] = useState("");
+  const [id, setId] = useState(localStorage.getItem('storeId'));
+  console.log(id);
   const [password, setPassword] = useState("");
   const [severity, setSeverity] = useState("info");
   const [message, setMessage] = useState("info");
@@ -19,7 +21,7 @@ export const Login = () => {
   const [loading, setLoading] = useState(false);
   const handleLogin = async () => {
     setLoading(true);
-    if (!email || password.length < 5) {
+    if (!id || password.length < 5) {
       setOpen(true);
       setSeverity("warning");
       setMessage("Invalid login input");
@@ -28,7 +30,7 @@ export const Login = () => {
       dispatch(LoginStart);
       try {
         const res = await request.post("/auth", {
-          email,
+          id,
           password,
         });
         setOpen(true);
@@ -71,9 +73,9 @@ export const Login = () => {
       />
       <Input
         type="text"
-        placeholder="Email"
-        value={email}
-        event={(e) => setEmail(e.target.value)}
+        placeholder="Store ID"
+        value={id}
+        event={(e) => setId(e.target.value)}
       />
       <Input
         type="password"
@@ -88,6 +90,9 @@ export const Login = () => {
       >
         {loading ? "Please wait..." : "Sign in"}
       </button>
+      <Link to="/register" className="instead">
+        Create new account
+      </Link>
     </div>
   );
 };

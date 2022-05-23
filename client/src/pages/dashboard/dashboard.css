@@ -89,6 +89,19 @@ input::placeholder{
 .search-input:focus{
   outline: none;
 }
+.expired{
+  color: red !important;
+}
+.active{
+  color: #087a75;
+}
+.out-stock{
+  color: #868788;
+}
+.drug-name{
+  color: #087a75;
+  font-weight: 500;
+}
 .drugs-container {
   width: 98%;
   height: 60vh;

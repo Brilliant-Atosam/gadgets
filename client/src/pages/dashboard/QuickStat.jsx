@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 import moment from "moment";
 import { useSelector } from "react-redux";
-const QuickStat = ({ drugsNum, outStock, dailySales, monthlySales }) => {
+const QuickStat = ({ drugsNum, outStock, dailySales, expired }) => {
   return (
     <div className="quick-stat">
       <h1 className="heading">Quick Stat</h1>
@@ -16,15 +16,15 @@ const QuickStat = ({ drugsNum, outStock, dailySales, monthlySales }) => {
         </div>
         <div className="quick-stat-item">
           <span className="number">
-            <b>&#8373;{dailySales}</b>
+            <b>{expired}</b>
           </span>
-          <span className="desc">{moment().format('ddd, D MMM')}</span>
+          <span className="desc">Expired</span>
         </div>
         <div className="quick-stat-item">
           <span className="number">
-            <b>&#8373;{monthlySales}</b>
+            <b>&#8373;{dailySales}</b>
           </span>
-          <span className="desc">{moment().format('MMM, YYYY')}</span>
+          <span className="desc">{moment().format("ddd, D MMM")}</span>
         </div>
       </div>
     </div>

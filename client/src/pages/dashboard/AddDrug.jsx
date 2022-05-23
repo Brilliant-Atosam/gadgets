@@ -12,23 +12,22 @@ import { Add, Close } from "@mui/icons-material";
 import { request } from "../../request";
 import { useSelector } from "react-redux";
 import AlertComponent from "../../components/Alert";
-export default function FormDialog({
+import moment from "moment";
+  export default function AddDrugForm({
   open,
   handleClose,
-  addDrug,
-
-}) {
-  const allDrugs = useSelector((state) => state.drugs?.Drugs);
-  const [drugs, setDrugs] = useState(allDrugs);
-  const [name, setName] = useState("");
-  const [stock, setStock] = useState();
-  const [supplier, setSupplier] = useState("");
-  const [implications, setImplications] = useState("");
-  const [dosage, setDosage] = useState("");
-  const [price, setPrice] = useState();
-  const [openAlert, setOpenAlert] = useState(false);
-  const [severity, setSeverity] = useState("success");
-  const [message, setMessage] = useState("");
+  handleAdd,
+  nameEvent,
+  stockEvent,
+  supplierEvent,
+  implicationsEvent,
+  priceEvent,
+  dosageEvent,
+  expiryEvent,
+}){
+const [openAlert, setOpenAlert] = useState(false);
+const [severity, setSeverity] = useState("success");
+const [message, setMessage] = useState("");
 
   return (
     <div>
@@ -45,15 +44,13 @@ export default function FormDialog({
         <DialogContent>
           <DialogContentText>Kindly fill all fields</DialogContentText>
           <TextField
-            autoFocus
             margin="dense"
             label="Drug name"
             type="text"
             fullWidth
             variant="outlined"
             className="dial-input"
-            value={name}
-            onChange={(e) => setName(e.target.value)}
+            onChange={nameEvent}
           />
           <TextField
             margin="dense"
@@ -62,8 +59,7 @@ export default function FormDialog({
             fullWidth
             variant="outlined"
             className="dial-input"
-            value={stock}
-            onChange={(e) => setStock(e.target.value)}
+            onChange={stockEvent}
           />
           <TextField
             margin="dense"
@@ -71,27 +67,24 @@ export default function FormDialog({
             type="text"
             fullWidth
             variant="outlined"
-            value={supplier}
             className="dial-input"
-            onChange={(e) => setSupplier(e.target.value)}
+            onChange={supplierEvent}
           />
           <TextField
             margin="dense"
-            onChange={(e) => setImplications(e.target.value)}
+            onChange={implicationsEvent}
             label="Implications"
             type="text"
-            value={implications}
             fullWidth
             variant="outlined"
             className="dial-input"
           />
           <TextField
             margin="dense"
-            onChange={(e) => setPrice(e.target.value)}
+            onChange={priceEvent}
             label="Price"
             type="number"
             fullWidth
-            value={price}
             variant="outlined"
             className="dial-input"
           />
@@ -101,16 +94,24 @@ export default function FormDialog({
             type="text"
             fullWidth
             variant="outlined"
-            value={dosage}
-            onChange={(e) => setDosage(e.target.value)}
+            onChange={dosageEvent}
             className="dial-input"
+          />
+          <TextField
+            id="date"
+            margin="dense"
+            label="Expiry date"
+            type="date"
+            onChange={expiryEvent}
+            variant="outlined"
+            fullWidth
           />
         </DialogContent>
         <DialogActions>
           <Button onClick={handleClose}>
             <Close className="dial-icon cancel" />
           </Button>
-          <Button onClick={addDrug}>
+          <Button onClick={handleAdd}>
             <Add className="dial-icon" />
           </Button>
         </DialogActions>

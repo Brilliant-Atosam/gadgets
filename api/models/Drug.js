@@ -1,10 +1,11 @@
 const mongoose = require("mongoose");
-const moment = require("moment");
 const drugSchema = new mongoose.Schema({
   name: String,
   id: String,
   stock: Number,
+  storeId: String,
   supplier: String,
+  expiry: String,
   implications: [String],
   dosage: String,
   price: Number,

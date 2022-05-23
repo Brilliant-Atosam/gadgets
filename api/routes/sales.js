@@ -4,12 +4,17 @@ const Drug = require("../models/Drug");
 const Sales = require("../models/Sales");
 // GET ALL SALES
 router.get("/", async (req, res) => {
-  const sales = await Sales.find();
-  res.json(sales);
+  const { storeId } = req.body;
+  try {
+    const sales = await Sales.find({ storeId });
+    res.json(sales);
+  } catch (err) {
+    res.status(500).json("Oooops! Try again.");
+  }
 });
 // ADD SALES
 router.post("/", async (req, res) => {
-  const { drug_id, drug_name, quantity, cost } = req.body;
+  const { drug_id, drug_name, quantity, cost, storeId } = req.body;
   try {
     const drug = await Drug.findOne({ id: drug_id });
     if (drug.stock < quantity) {
@@ -21,6 +26,7 @@ router.post("/", async (req, res) => {
           .substring(1),
         drug_id,
         drug_name,
+        storeId,
         quantity,
         cost,
         createdAt: moment().format("DD/MM/YYYY h:mm:ss"),
