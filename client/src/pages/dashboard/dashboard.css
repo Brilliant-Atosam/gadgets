@@ -48,6 +48,12 @@
   flex-direction: column;
   color: white;
 }
+.quick-stat-header{
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
 .quick-stat-item .number {
   font-size: 14px;
   margin-bottom: 5px;

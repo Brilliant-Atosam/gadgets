@@ -8,7 +8,7 @@ import {
   DialogContentText,
   DialogTitle,
 } from "@mui/material";
-import { AddPhotoAlternate, CancelOutlined, Check } from "@mui/icons-material";
+import { AddPhotoAlternate, Close, Check } from "@mui/icons-material";
 import { request } from "../../request";
 import { useParams } from "react-router-dom";
 import { useSelector } from "react-redux";
@@ -127,7 +127,7 @@ export default function FormDialog({ open, handleClose }) {
         </DialogContent>
         <DialogActions>
           <Button onClick={handleClose}>
-            <CancelOutlined className="dial-icon cancel" />
+            <Close className="dial-icon cancel" />
           </Button>
           <Button onClick={() => handleEdit()}>
             <Check />

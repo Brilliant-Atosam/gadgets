@@ -1,5 +1,5 @@
 import "./navbar.css";
-import { Autorenew, Menu, Search, TrendingUp } from "@mui/icons-material";
+import { Autorenew, Menu, TrendingUp } from "@mui/icons-material";
 import LogoutSharp from "@mui/icons-material/Logout";
 import { useState } from "react";
 import { Link } from "react-router-dom";

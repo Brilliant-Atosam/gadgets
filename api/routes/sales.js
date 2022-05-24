@@ -4,7 +4,7 @@ const Drug = require("../models/Drug");
 const Sales = require("../models/Sales");
 // GET ALL SALES
 router.get("/", async (req, res) => {
-  const { storeId } = req.body;
+  const { storeId } = req.query;
   try {
     const sales = await Sales.find({ storeId });
     res.json(sales);

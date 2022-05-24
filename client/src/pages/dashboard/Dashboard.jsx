@@ -8,7 +8,6 @@ import {
   RestartAlt,
   Search,
   Close,
-  Add,
 } from "@mui/icons-material";
 import moment from "moment";
 import { useSelector, useDispatch } from "react-redux";
@@ -16,15 +15,6 @@ import DataTable from "../../components/Table";
 import AddDrugForm from "./AddDrug";
 import { drugsStart, drugsSuccess, drugsFailure } from "../../redux/drugs";
 import { salesStart, salesSuccess, salesFailure } from "../../redux/sales";
-import {
-  TextField,
-  Button,
-  DialogActions,
-  Dialog,
-  DialogContent,
-  DialogContentText,
-  DialogTitle,
-} from "@mui/material";
 import { useState } from "react";
 import { request } from "../../request";
 import { Link } from "react-router-dom";
@@ -33,11 +23,13 @@ import Restock from "./Restock";
 import AlertComponent from "../../components/Alert";
 import { salesColumn } from "../../data";
 import Loading from "../../components/Loading";
-import { spacing } from "@mui/system";
 import SellDrugForm from "./Sell";
+import CustomizedSnackbars from "../../components/Snackback";
+import SnackbarAlert from "../../components/Snackback";
 const Dashboard = () => {
   const dispatch = useDispatch();
 
+  const storeId = localStorage.getItem("storeId");
   const [loading, setLoading] = useState(false);
   // REFRESHING DATA
   const handleRefresh = async () => {
@@ -45,9 +37,9 @@ const Dashboard = () => {
     dispatch(drugsStart());
     dispatch(salesStart());
     try {
-      const drugs = await request.get("/drugs");
+      const drugs = await request.get(`/drugs?storeId=${storeId}`);
       dispatch(drugsSuccess(drugs.data));
-      const sales = await request.get("/sales");
+      const sales = await request.get(`/sales?storeId=${storeId}`);
       dispatch(salesSuccess(sales.data));
       window.location.reload();
     } catch (err) {
@@ -62,6 +54,7 @@ const Dashboard = () => {
   const [drugs, setDrugs] = useState(allDrugs);
   const [sales, setSales] = useState(allSales);
   const [drugsNum, setDrugsNum] = useState(drugs?.length);
+  const [openSnack, setOpenSnack] = useState(false);
   const salesToday = sales?.filter(
     (sale) => sale.createdAt?.indexOf(moment().format("DD/MM/YYYY")) > -1
   );
@@ -83,7 +76,6 @@ const Dashboard = () => {
       ? monthlySalesFigures.reduce((a, b) => a + b)
       : 0
   );
-  const [openDial, setOpenDial] = useState(false);
   const [openSell, setOpenSell] = useState(false);
   const [openStock, setOpenStock] = useState(false);
   const [quantity, setQuantity] = useState(0);
@@ -98,7 +90,7 @@ const Dashboard = () => {
   const [openAlert, setOpenAlert] = useState(false);
   const [severity, setSeverity] = useState("success");
   const [message, setMessage] = useState("");
-  console.log(name);
+  console.log(storeId);
   // ADD DRUG FORM
   const [openAdd, setOpenAdd] = useState(false);
   // ADD DRUG
@@ -106,6 +98,7 @@ const Dashboard = () => {
     // setOpenAdd(false);
     setLoading(true);
     const drugDetails = {
+      storeId,
       name,
       stock,
       supplier,
@@ -116,21 +109,21 @@ const Dashboard = () => {
       id: (Math.floor(Math.random() * 100000) + 100000).toString().substring(1),
     };
     if (!name || !stock || !price) {
-      setOpenAlert(true);
-      setSeverity("warning");
+      setOpenSnack(true);
       setMessage("Provide valid data for name, stock or price");
+      setLoading(false);
     } else if (new Date(expiry) < new Date()) {
       setMessage("Can't add expired item");
-      setOpenAlert(true);
+      setOpenSnack(true);
       setSeverity("warning");
+      setLoading(false);
     } else {
       try {
-        setOpenAlert(true);
+        setOpenSnack(true);
         const res = await request.post("/drugs", drugDetails);
         setDrugs([drugDetails, ...drugs]);
         setDrugsNum(drugsNum + 1);
         setMessage(res.data);
-        setSeverity("success");
         setName("");
         setDosage("");
         setPrice("");
@@ -140,7 +133,6 @@ const Dashboard = () => {
         setLoading(false);
       } catch (err) {
         setMessage(err.response.data);
-        setSeverity("error");
         setLoading(false);
       }
     }
@@ -150,9 +142,10 @@ const Dashboard = () => {
     if (!quantity || quantity < 1) {
       setSeverity("error");
       setMessage("Enter valid quantity");
-      setOpenAlert(true);
+      setOpenSnack(true);
     } else {
       const salesDetails = {
+        storeId,
         drug_name: name,
         drug_id: id,
         cost: price * quantity,
@@ -169,19 +162,15 @@ const Dashboard = () => {
         setDailySales(dailySales + salesDetails.cost);
         setMonthlySales(monthlySales + salesDetails.cost);
         setMessage(res.data);
-        setOpenAlert(true);
+        setOpenSnack(true);
       } catch (err) {
-        setOpenAlert(true);
+        setOpenSnack(true);
         setMessage(err.response.data);
         setSeverity("error");
       }
       setOpenSell(false);
     }
   };
-  const handleClose = () => {
-    setOpenDial(false);
-  };
-
   const drugsColumn = [
     {
       field: "name",
@@ -255,10 +244,12 @@ const Dashboard = () => {
   ];
 
   const handleRestock = async () => {
+    setLoading(true);
     if (!stock || stock < 1) {
       setSeverity("warning");
       setMessage("Enter valid stock number");
       setOpenAlert(true);
+      setLoading(false);
     } else {
       try {
         const res = await request.put("/drugs/restock/" + id, {
@@ -275,6 +266,7 @@ const Dashboard = () => {
       }
       setOpenAlert(true);
       setOpenStock(false);
+      setLoading(false);
     }
   };
   return (
@@ -320,7 +312,17 @@ const Dashboard = () => {
         handleSellDrug={() => sellDrug()}
         stock={stock}
       />
-    
+      <SnackbarAlert
+        open={openSnack}
+        message={message}
+        severity={severity}
+        handleClose={(event, reason) => {
+          if (reason === "clickaway") {
+            return;
+          }
+          setOpenSnack(false);
+        }}
+      />
       <div className="dashboard-container">
         <div className="dash-left">
           <QuickStat

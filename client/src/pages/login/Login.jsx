@@ -12,8 +12,7 @@ import { Link } from "react-router-dom";
 export const Login = () => {
   const dispatch = useDispatch();
 
-  const [id, setId] = useState(localStorage.getItem('storeId'));
-  console.log(id);
+  const [id, setId] = useState(localStorage.getItem("storeId"));
   const [password, setPassword] = useState("");
   const [severity, setSeverity] = useState("info");
   const [message, setMessage] = useState("info");
@@ -38,13 +37,14 @@ export const Login = () => {
         setMessage(res.data);
         setLoading(false);
         dispatch(LoginSuccess(res.data));
+        localStorage.setItem("storeId", id);
         dispatch(drugsStart);
         dispatch(salesStart);
         try {
           const fetchData = async () => {
-            const drugs = await request.get("/drugs");
+            const drugs = await request.get(`/drugs?storeId=${id}`);
             dispatch(drugsSuccess(drugs.data));
-            const sales = await request.get("/sales");
+            const sales = await request.get(`/sales?storeId=${id}`);
             dispatch(salesSuccess(sales.data));
           };
           fetchData();

@@ -1,29 +1,19 @@
 import {
   ArrowForwardIos,
   MedicalServices,
-  Restore,
   CurrencyExchange,
   Add,
-  Edit,
   Visibility,
   Close,
   Search,
   RestartAlt,
 } from "@mui/icons-material";
+import SnackbarAlert from "../../components/Snackback";
 import moment from "moment";
-import FormDialog from "../dashboard/AddDrug";
 import { useSelector, useDispatch } from "react-redux";
 import DataTable from "../../components/Table";
 import { drugsStart, drugsSuccess, drugsFailure } from "../../redux/drugs";
-import {
-  TextField,
-  Button,
-  DialogActions,
-  Dialog,
-  DialogContent,
-  DialogContentText,
-  DialogTitle,
-} from "@mui/material";
+import { TextField } from "@mui/material";
 import { useEffect, useState } from "react";
 import { request } from "../../request";
 import { Link } from "react-router-dom";
@@ -33,13 +23,15 @@ import Loading from "../../components/Loading";
 import AlertComponent from "../../components/Alert";
 import SellDrugForm from "../dashboard/Sell";
 import AddDrugForm from "../dashboard/AddDrug";
+import QuickStat from "./QuickStat";
 const Drugs = () => {
+  const storeId = localStorage.getItem("storeId");
   const dispatch = useDispatch();
   useEffect(() => {
     dispatch(drugsStart);
     try {
       const fetchData = async () => {
-        const drugs = await request.get("/drugs");
+        const drugs = await request.get(`/drugs?storeId=${storeId}`);
         dispatch(drugsSuccess(drugs.data));
       };
       fetchData();
@@ -65,11 +57,19 @@ const Drugs = () => {
   const [openAlert, setOpenAlert] = useState(false);
   const [severity, setSeverity] = useState("success");
   const [message, setMessage] = useState("");
+  const [openSnack, setOpenSnack] = useState(false);
+  const [drugsNum, setDrugsNum] = useState(drugs?.length);
+  const [outStock, setOutStock] = useState(
+    drugs?.filter((drug) => drug.stock === 0).length
+  );
+  const [expired, setExpired] = useState(
+    drugs?.filter((drug) => new Date(drug.expiry) < new Date()).length
+  );
+  const [active, setActive] = useState(drugsNum - expired);
   //   ADD DRUG
   const handleAdd = async () => {
-    setOpenAlert(true);
     if (!name || !price || stock < 1) {
-      setSeverity("warning");
+      setOpenSnack(true);
       setMessage("Provide valid data for name, price or stock");
     } else {
       const drugDetails = {
@@ -80,6 +80,7 @@ const Drugs = () => {
         dosage,
         price,
         expiry,
+        storeId,
         id: (Math.floor(Math.random() * 100000) + 100000)
           .toString()
           .substring(1),
@@ -93,10 +94,13 @@ const Drugs = () => {
         setImplications("");
         setDosage("");
         setMessage(res.data);
+        setOpenSnack(true);
         setDrugs([drugDetails, ...drugs]);
+        setDrugsNum(drugsNum + 1);
+        setActive(active + 1);
       } catch (err) {
         setMessage(err.response.data);
-        setSeverity("error");
+        setOpenSnack(true);
       }
     }
   };
@@ -112,6 +116,7 @@ const Drugs = () => {
         drug_id: id,
         cost: price * quantity,
         quantity,
+        storeId,
         createdAt: moment().format("DD/MM/YYYY h:mm:ss"),
         id: (Math.floor(Math.random() * 100000) + 100000)
           .toString()
@@ -122,15 +127,14 @@ const Drugs = () => {
         setQuantity(0);
         setMessage(res.data);
         setOpenAlert(true);
+        setSeverity("success");
       } catch (err) {
         setOpenAlert(true);
         setMessage(err.response.data);
         setSeverity("error");
       }
-      setOpenSell(false);
     }
   };
-
 
   const drugsColumn = [
     {
@@ -223,7 +227,7 @@ const Drugs = () => {
     setLoading(true);
     dispatch(drugsStart());
     try {
-      const drugs = await request.get("/drugs");
+      const drugs = await request.get(`/drugs?storeId=${storeId}`);
       dispatch(drugsSuccess(drugs.data));
       window.location.reload();
     } catch (err) {
@@ -274,19 +278,27 @@ const Drugs = () => {
         expiryEvent={(e) => setExpiry(e.target.value)}
         handleAdd={() => handleAdd()}
       />
+      <SnackbarAlert
+        open={openSnack}
+        message={message}
+        handleClose={(event, reason) => {
+          if (reason === "clickaway") {
+            return;
+          }
+          setOpenSnack(false);
+        }}
+      />
       <div className="dashboard-container">
         <div className="dash-left">
+          <QuickStat
+            drugsNum={drugsNum}
+            outStock={outStock}
+            expired={expired}
+            active={active}
+          />
           <div className="drugs-container drugs-page">
             <div className="add-drug-form">
               <h1 className="heading">Add new drug</h1>
-              <AlertComponent
-                open={openAlert}
-                severity={severity}
-                message={message}
-                close={() => {
-                  setOpenAlert(false);
-                }}
-              />
               <TextField
                 margin="dense"
                 label="Drug name"

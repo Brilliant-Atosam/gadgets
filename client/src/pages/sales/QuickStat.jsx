@@ -3,7 +3,12 @@ import moment from "moment";
 const QuickStat = ({ dailySales, monthlySales, annualSales, overallSales }) => {
   return (
     <div className="quick-stat">
-      <h1 className="heading">Sales Overview</h1>
+     <div className="quick-stat-header">
+        <h1 className="heading">Sales Overview</h1>
+        <h1 className="heading">
+          Store Id: <b>{localStorage.getItem("storeId")}</b>
+        </h1>
+      </div>
       <div className="quick-stat-container">
         <div className="quick-stat-item">
           <span className="number">&#8373;{dailySales}</span>

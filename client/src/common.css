@@ -39,6 +39,9 @@
   margin-left: 10px;
   color: #087a75;
 }
+.over{
+  z-index: 999999999999999 !important;
+}
 .icon-link {
   cursor: pointer;
   color: #087a75 !important;
