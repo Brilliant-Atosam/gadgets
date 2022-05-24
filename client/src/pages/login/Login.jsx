@@ -34,8 +34,7 @@ export const Login = () => {
         });
         setOpen(true);
         setSeverity("success");
-        setMessage(res.data);
-        setLoading(false);
+        setMessage("Login successful. Redirecting to dashoard");
         dispatch(LoginSuccess(res.data));
         localStorage.setItem("storeId", id);
         dispatch(drugsStart);
@@ -53,7 +52,7 @@ export const Login = () => {
           dispatch(salesFailure(err.response.data));
         }
       } catch (err) {
-        dispatch(LoginFailure());
+        dispatch(LoginFailure(err.response.data));
         setOpen(true);
         setSeverity("error");
         setMessage(err.response.data);

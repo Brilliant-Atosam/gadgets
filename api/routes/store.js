@@ -6,8 +6,8 @@ const Store = require("../models/Store");
 // GET ALL DRUGS
 router.get("/", async (req, res) => {
   try {
-    const drugs = await Drug.find();
-    res.status(200).json(drugs);
+    const stores = await Store.find();
+    res.status(200).json(stores);
   } catch (err) {
     res.status(500).json(err.message);
   }
@@ -15,31 +15,34 @@ router.get("/", async (req, res) => {
 // ADD Store
 router.post("/", async (req, res) => {
   const { name, password, phone } = req.body;
- 
-    try {
-      const newStore = new Store({
-        name, 
-        password: await bcrypt.hash(password, 10), 
-        phone,
-        createdAt: moment().format("DD/MM/YYYY h:mm:ss"),
-        id: (Math.floor(Math.random() * 100000) + 100000)
-        .toString()
-        .substring(1),
-      });
-      await newStore.save();
-      res.status(200).json(newStore);
-    } catch (err) {
-      res.status(500).json("Something went wrong!");
-      console.log(err.message);
-    }
-  
+
+  try {
+    const newStore = new Store({
+      name,
+      password: await bcrypt.hash(password, 10),
+      phone,
+      createdAt: moment().format("DD/MM/YYYY h:mm:ss"),
+      id: (Math.floor(Math.random() * 100000) + 100000).toString().substring(1),
+    });
+    await newStore.save();
+    res.status(200).json(newStore);
+  } catch (err) {
+    res.status(500).json("Something went wrong!");
+    console.log(err.message);
+  }
 });
-// EDIT DRUG
+// SUBCRIBE
 router.put("/:id", async (req, res) => {
   try {
-    const drug = await Drug.findOne({ id: req.params.id });
-    await drug.updateOne({ $set: req.body });
-    res.json("Updated successfully");
+    await Drug.findOneAndUpdate(
+      { id: req.params.id },
+      {
+        lastVerified: moment().format("MM/DD/YYYY"),
+        nextVerification: moment().add(30, "days").format("MM/DD/YYYY"),
+      }
+    );
+    res.status(200);
+    console.log("The work is done");
   } catch (err) {
     res.status(500).json("Oooops! Try again");
     console.log(err.message);

@@ -33,6 +33,18 @@
   border-radius: 4px;
   box-sizing: content-box;
 }
+.btn-sub{
+  background: #087a75;
+  color: white;
+  padding: 10px 20px !important;
+  box-sizing: content-box;
+  font-size: 18px;
+}
+.message{
+  font-size: 22px;
+  text-align: center;
+  margin-bottom: 20px;
+}
 .heading {
   font-weight: 200;
   font-size: 14px;
