@@ -39,19 +39,16 @@ export const Login = () => {
         localStorage.setItem("storeId", id);
         dispatch(drugsStart);
         dispatch(salesStart);
-        try {
-          const fetchData = async () => {
-            const drugs = await request.get(`/drugs?storeId=${id}`);
-            dispatch(drugsSuccess(drugs.data));
-            const sales = await request.get(`/sales?storeId=${id}`);
-            dispatch(salesSuccess(sales.data));
-          };
-          fetchData();
-        } catch (err) {
-          dispatch(drugsFailure(err.response.data));
-          dispatch(salesFailure(err.response.data));
+        if (new Date(res.data.nextVerification) < new Date()) {
+          window.location.href = "/renew";
         }
+        const drugs = await request.get(`/drugs?storeId=${id}`);
+        dispatch(drugsSuccess(drugs.data));
+        const sales = await request.get(`/sales?storeId=${id}`);
+        dispatch(salesSuccess(sales.data));
       } catch (err) {
+        dispatch(drugsFailure(err.response.data));
+        dispatch(salesFailure(err.response.data));
         dispatch(LoginFailure(err.response.data));
         setOpen(true);
         setSeverity("error");
