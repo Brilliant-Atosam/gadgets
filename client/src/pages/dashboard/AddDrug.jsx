@@ -1,4 +1,3 @@
-import { useState } from "react";
 import {
   TextField,
   Button,
@@ -9,11 +8,7 @@ import {
   DialogTitle,
 } from "@mui/material";
 import { Add, Close } from "@mui/icons-material";
-import { request } from "../../request";
-import { useSelector } from "react-redux";
-import AlertComponent from "../../components/Alert";
-import moment from "moment";
-  export default function AddDrugForm({
+export default function AddDrugForm({
   open,
   handleClose,
   handleAdd,
@@ -24,23 +19,11 @@ import moment from "moment";
   priceEvent,
   dosageEvent,
   expiryEvent,
-}){
-const [openAlert, setOpenAlert] = useState(false);
-const [severity, setSeverity] = useState("success");
-const [message, setMessage] = useState("");
-
+}) {
   return (
     <div>
       <Dialog open={open} onClose={handleClose}>
         <DialogTitle className="dial-heading">ADD/EDIT DRUG FORM</DialogTitle>
-        <AlertComponent
-          open={openAlert}
-          severity={severity}
-          message={message}
-          close={() => {
-            setOpenAlert(false);
-          }}
-        />
         <DialogContent>
           <DialogContentText>Kindly fill all fields</DialogContentText>
           <TextField

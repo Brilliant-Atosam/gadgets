@@ -10,7 +10,7 @@ import { Register } from "./pages/register/Register";
 import Subscribe from "./pages/Subscribe";
 import RenewSub from "./pages/RenewSub";
 function App() {
-  const isLoggedIn = useSelector((state) => state.store.Store);
+  const store = useSelector((state) => state.store.Store);
   const sales = useSelector((state) => state.sales.Sales);
   const drugs = useSelector((state) => state.drugs.Drugs);
   return (
@@ -23,7 +23,7 @@ function App() {
           <Route
             path="/login"
             element={
-              isLoggedIn && drugs !== null && sales !== null ? (
+              store && drugs !== null && sales !== null ? (
                 <Navigate to="/" />
               ) : (
                 <Login />
@@ -33,7 +33,7 @@ function App() {
           <Route
             path="/"
             element={
-              isLoggedIn && drugs !== null && sales !== null ? (
+              store && drugs !== null && sales !== null ? (
                 <Dashboard />
               ) : (
                 <Navigate to="/login" />
@@ -43,27 +43,19 @@ function App() {
           <Route
             path="/sales"
             element={
-              isLoggedIn && sales !== null ? (
-                <Sales />
-              ) : (
-                <Navigate to="/login" />
-              )
+              store && sales !== null ? <Sales /> : <Navigate to="/login" />
             }
           />
           <Route
             path="/drugs"
             element={
-              isLoggedIn && drugs !== null ? (
-                <Drugs />
-              ) : (
-                <Navigate to="/login" />
-              )
+              store && drugs !== null ? <Drugs /> : <Navigate to="/login" />
             }
           />
           <Route
             path="/drugs/:id"
             element={
-              isLoggedIn && drugs !== null && sales !== null ? (
+              store && drugs !== null && sales !== null ? (
                 <ProductDetails />
               ) : (
                 <Navigate to="/login" />

@@ -1,14 +1,29 @@
 import { usePaystackPayment } from "react-paystack";
+import { useDispatch } from "react-redux";
+import { LoginFailure, LoginStart, LoginSuccess } from "../redux/login";
 import { request } from "../request";
 const storeId = localStorage.getItem("storeId");
 const Subscribe = () => {
-  async function subscribe() {
-    await request.put(`/store/${storeId}`);
-    window.location.href = "/login";
-  }
-  const onSuccess = () => {
-    subscribe();
+  const dispatch = useDispatch();
+  const callLogin = async () => {
+    dispatch(LoginStart);
+    try {
+      const res = await request.post("/auth/renew", {
+        id: storeId,
+      });
+      dispatch(LoginSuccess(res.data));
+      window.location.href = "/";
+    } catch (err) {
+      dispatch(LoginFailure());
+    }
   };
+  const subscribe = async () => {
+    await request.put(`/store/${storeId}`);
+    window.location.href = "/";
+  };
+  // const onSuccess = () => {
+  //   subscribe();
+  // };
 
   const onClose = () => {
     window.location.reload();
@@ -29,7 +44,8 @@ const Subscribe = () => {
       <button
         className="btn btn-sub"
         onClick={() => {
-          initializePayment(onSuccess, onClose);
+          callLogin();
+          // initializePayment(onSuccess, onClose);
         }}
       >
         Activate Store

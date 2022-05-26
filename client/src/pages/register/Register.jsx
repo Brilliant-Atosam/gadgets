@@ -28,7 +28,7 @@ export const Register = () => {
           password,
         });
         await localStorage.setItem("storeId", res.data.id);
-        window.location.href = "/sub";
+        window.location.href = "/login";
       } catch (err) {
         setOpen(true);
         setSeverity("error");

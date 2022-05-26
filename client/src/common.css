@@ -59,7 +59,7 @@
   color: #087a75 !important;
 }
 .no-show {
-  display: none;
+  display: none !important;
 }
 .alert {
   width: 100%;
@@ -82,6 +82,9 @@
 }
 .mb20 {
   margin-bottom: 20px;
+}
+.mt10{
+  margin-top: 10px;
 }
 .drugs-page {
   height: fit-content !important;

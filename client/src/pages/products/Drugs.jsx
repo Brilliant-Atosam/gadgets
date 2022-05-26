@@ -38,7 +38,7 @@ const Drugs = () => {
     } catch (err) {
       dispatch(drugsFailure(err.response.data));
     }
-  }, [dispatch]);
+  }, [dispatch, storeId]);
   const [openAdd, setOpenAdd] = useState(false);
   const allDrugs = useSelector((state) => state.drugs.Drugs);
   const [drugs, setDrugs] = useState(allDrugs);
@@ -59,48 +59,51 @@ const Drugs = () => {
   const [message, setMessage] = useState("");
   const [openSnack, setOpenSnack] = useState(false);
   const [drugsNum, setDrugsNum] = useState(drugs?.length);
-  const [outStock, setOutStock] = useState(
-    drugs?.filter((drug) => drug.stock === 0).length
-  );
-  const [expired, setExpired] = useState(
-    drugs?.filter((drug) => new Date(drug.expiry) < new Date()).length
-  );
-  const [active, setActive] = useState(drugsNum - expired);
+  const outStock = drugs?.filter((drug) => drug.stock === 0).length;
+  const expired = drugs?.filter(
+    (drug) => new Date(drug.expiry) < new Date()
+  ).length;
+  const active = drugsNum - expired - outStock;
   //   ADD DRUG
   const handleAdd = async () => {
-    if (!name || !price || stock < 1) {
+    setLoading(true);
+    const drugDetails = {
+      storeId,
+      name,
+      stock,
+      supplier,
+      implications: implications.split(", "),
+      dosage,
+      price,
+      expiry: moment(expiry).format("MM/DD/YYYY"),
+      id: (Math.floor(Math.random() * 100000) + 100000).toString().substring(1),
+    };
+    if (!name || !stock || !price) {
       setOpenSnack(true);
-      setMessage("Provide valid data for name, price or stock");
+      setMessage("Provide valid data for name, stock or price");
+      setLoading(false);
+    } else if (new Date(expiry) < new Date()) {
+      setMessage("Can't add expired item");
+      setOpenSnack(true);
+      setSeverity("warning");
+      setLoading(false);
     } else {
-      const drugDetails = {
-        name,
-        stock,
-        supplier,
-        implications: implications.split(", "),
-        dosage,
-        price,
-        expiry,
-        storeId,
-        id: (Math.floor(Math.random() * 100000) + 100000)
-          .toString()
-          .substring(1),
-      };
       try {
-        const res = await request.post("/drugs", drugDetails);
-        setName("");
-        setStock("");
-        setPrice("");
-        setSupplier("");
-        setImplications("");
-        setDosage("");
-        setMessage(res.data);
         setOpenSnack(true);
+        const res = await request.post("/drugs", drugDetails);
         setDrugs([drugDetails, ...drugs]);
         setDrugsNum(drugsNum + 1);
-        setActive(active + 1);
+        setMessage(res.data);
+        setName("");
+        setDosage("");
+        setPrice("");
+        setExpiry("");
+        setStock(0);
+        setImplications("");
+        setLoading(false);
       } catch (err) {
         setMessage(err.response.data);
-        setOpenSnack(true);
+        setLoading(false);
       }
     }
   };
@@ -175,7 +178,7 @@ const Drugs = () => {
           />
           {new Date(params.row.expiry) > new Date() && (
             <CurrencyExchange
-              className="action-icon"
+              className={params.row.stock < 1 ? "no-show" : `action-icon`}
               onClick={() => {
                 setName(params.row.name);
                 setPrice(params.row.price);
@@ -200,6 +203,8 @@ const Drugs = () => {
         <>
           {new Date(params.row.expiry) < new Date() ? (
             <span className="expired">Expired</span>
+          ) : params.row.stock < 1 ? (
+            <span className="out-stock">Out of Stock</span>
           ) : (
             <span className="active">Active</span>
           )}
@@ -359,7 +364,20 @@ const Drugs = () => {
                 onChange={(e) => setDosage(e.target.value)}
                 className="dial-input"
               />
-              <button className="btn add-drug-btn" onClick={() => handleAdd()}>
+              <TextField
+                margin="dense"
+                label="Dosage"
+                type="date"
+                fullWidth
+                variant="outlined"
+                value={expiry}
+                onChange={(e) => setExpiry(e.target.value)}
+                className="dial-input"
+              />
+              <button
+                className="btn add-drug-btn mt10"
+                onClick={() => handleAdd()}
+              >
                 <Add className="mr10" /> Add Drug
               </button>
             </div>

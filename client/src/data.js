@@ -1,13 +1,4 @@
-import {
-  Edit,
-  Redo,
-  CurrencyExchange,
-  Visibility,
-  Restore,
-  RestartAlt,
-} from "@mui/icons-material";
-import moment from "moment";
-import { Link } from "react-router-dom";
+import { CurrencyExchange, Visibility } from "@mui/icons-material";
 export const drugsColumn = [
   { field: "id", headerName: "ID", width: 70 },
   { field: "name", headerName: "Drug", width: 130 },
@@ -48,6 +39,7 @@ export const drugSalesColumn = [
   { field: "quantity", headerName: "Qty", width: 40 },
   { field: "cost", headerName: "Cost", width: 130 },
 ];
+
 export const data = [
   {
     name: "Jan",

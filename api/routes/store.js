@@ -34,14 +34,14 @@ router.post("/", async (req, res) => {
 // SUBCRIBE
 router.put("/:id", async (req, res) => {
   try {
-    await Drug.findOneAndUpdate(
+    await Store.findOneAndUpdate(
       { id: req.params.id },
       {
         lastVerified: moment().format("MM/DD/YYYY"),
         nextVerification: moment().add(30, "days").format("MM/DD/YYYY"),
       }
     );
-    res.status(200);
+    res.status(200).json();
     console.log("The work is done");
   } catch (err) {
     res.status(500).json("Oooops! Try again");

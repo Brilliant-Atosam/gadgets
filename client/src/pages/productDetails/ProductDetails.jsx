@@ -3,7 +3,6 @@ import {
   Delete,
   Edit,
   RestartAlt,
-  WindowSharp,
 } from "@mui/icons-material";
 import { useSelector } from "react-redux";
 import { useParams } from "react-router-dom";
@@ -29,6 +28,7 @@ import Navbar from "../../components/nav/Navbar";
 import Loading from "../../components/Loading";
 import { salesFailure, salesStart, salesSuccess } from "../../redux/sales";
 import { useDispatch } from "react-redux";
+import Restock from "../dashboard/Restock";
 const ProductDetails = () => {
   const dispatch = useDispatch();
   const { id } = useParams();
@@ -36,6 +36,9 @@ const ProductDetails = () => {
     state.drugs.Drugs.find((drug) => drug.id === id)
   );
   const [openEdit, setOpenEdit] = useState(false);
+  const [openRestock, setOpenRestock] = useState(false);
+  const [stock, setStock] = useState(0);
+
   const salesHistory = useSelector((state) =>
     state.sales.Sales.filter((sale) => sale.drug_id === id)
   );
@@ -128,6 +131,33 @@ const ProductDetails = () => {
       setOpenSell(false);
     }
   };
+  // RESTOCK
+  const handleRestock = async () => {
+    setLoading(true);
+    if (!stock || stock < 1) {
+      setSeverity("warning");
+      setMessage("Enter valid stock number");
+      setOpenAlert(true);
+      setLoading(false);
+    } else {
+      try {
+        const res = await request.put("/drugs/restock/" + id, {
+          stock,
+        });
+        setMessage(res.data);
+        setOpenRestock(false);
+        setStock(0);
+        setMessage(res.data);
+        setSeverity("success");
+      } catch (err) {
+        setMessage(err.response.data);
+        setSeverity("error");
+      }
+      setOpenAlert(true);
+      setOpenRestock(false);
+      setLoading(false);
+    }
+  };
   const [loading, setLoading] = useState(false);
   // REFRESHING DATA
   const handleRefresh = async () => {
@@ -172,6 +202,13 @@ const ProductDetails = () => {
         event={(e) => setQuantity(e.target.value)}
         handleSellDrug={() => handleSellDrug()}
       />
+      <Restock
+        openStock={openRestock}
+        handleClose={() => setOpenRestock(false)}
+        name={drug?.name}
+        restockEvent={(e) => setStock(e.target.value)}
+        handleRestock={() => handleRestock()}
+      />
       <div className="dashboard-container">
         <div className="dash-left">
           <QuickStat
@@ -190,7 +227,12 @@ const ProductDetails = () => {
                     onClick={() => setOpenSell(true)}
                   />
                 )}
-                <RestartAlt className="icon-link mr10" />
+                <RestartAlt
+                  className="icon-link mr10"
+                  onClick={() => {
+                    setOpenRestock(true);
+                  }}
+                />
                 <Edit className="icon-link" onClick={() => setOpenEdit(true)} />
                 <Delete
                   className="icon-link"
@@ -246,6 +288,8 @@ const ProductDetails = () => {
                   <span className="value">
                     {new Date(drug?.expiry) < new Date() ? (
                       <span className="expired">Expired</span>
+                    ) : drug.stock < 1 ? (
+                      <span className="out-stock">Out of stock</span>
                     ) : (
                       <span className="active">Active</span>
                     )}

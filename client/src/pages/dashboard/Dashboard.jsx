@@ -15,7 +15,7 @@ import DataTable from "../../components/Table";
 import AddDrugForm from "./AddDrug";
 import { drugsStart, drugsSuccess, drugsFailure } from "../../redux/drugs";
 import { salesStart, salesSuccess, salesFailure } from "../../redux/sales";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { request } from "../../request";
 import { Link } from "react-router-dom";
 import QuickStat from "./QuickStat";
@@ -24,11 +24,9 @@ import AlertComponent from "../../components/Alert";
 import { salesColumn } from "../../data";
 import Loading from "../../components/Loading";
 import SellDrugForm from "./Sell";
-import CustomizedSnackbars from "../../components/Snackback";
 import SnackbarAlert from "../../components/Snackback";
 const Dashboard = () => {
   const dispatch = useDispatch();
-
   const storeId = localStorage.getItem("storeId");
   const [loading, setLoading] = useState(false);
   // REFRESHING DATA
@@ -50,6 +48,12 @@ const Dashboard = () => {
   };
   const allDrugs = useSelector((state) => state.drugs.Drugs);
   const allSales = useSelector((state) => state.sales.Sales);
+  const store = useSelector((state) => state.store.Store);
+  useEffect(() => {
+    store.lastVerified === undefined && (window.location.href = "/sub");
+    new Date(store.nextVerification) < new Date() &&
+      (window.location.href = "/renew");
+  }, [store]);
   const [search, setSearch] = useState("");
   const [drugs, setDrugs] = useState(allDrugs);
   const [sales, setSales] = useState(allSales);
@@ -90,12 +94,10 @@ const Dashboard = () => {
   const [openAlert, setOpenAlert] = useState(false);
   const [severity, setSeverity] = useState("success");
   const [message, setMessage] = useState("");
-  console.log(storeId);
   // ADD DRUG FORM
   const [openAdd, setOpenAdd] = useState(false);
   // ADD DRUG
   const handleAdd = async () => {
-    // setOpenAdd(false);
     setLoading(true);
     const drugDetails = {
       storeId,
@@ -210,7 +212,7 @@ const Dashboard = () => {
           />
           {new Date(params.row.expiry) > new Date() && (
             <CurrencyExchange
-              className="action-icon"
+              className={params.row.stock < 1 ? "no-show" : `action-icon`}
               onClick={() => {
                 setName(params.row.name);
                 setPrice(params.row.price);
@@ -235,6 +237,8 @@ const Dashboard = () => {
         <>
           {new Date(params.row.expiry) < new Date() ? (
             <span className="expired">Expired</span>
+          ) : params.row.stock < 1 ? (
+            <span className="out-stock">Out of Stock</span>
           ) : (
             <span className="active">Active</span>
           )}

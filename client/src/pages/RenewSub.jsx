@@ -18,7 +18,7 @@ const RenewSub = () => {
       dispatch(LoginFailure());
     }
   };
-  const onSuccess = async () => {
+  const onSuccess = () => {
     callLogin();
   };
 
@@ -41,7 +41,8 @@ const RenewSub = () => {
       <button
         className="btn btn-sub"
         onClick={() => {
-          initializePayment(onSuccess, onClose);
+          callLogin();
+          // initializePayment(onSuccess, onClose);
         }}
       >
         Renew Store Subscription
