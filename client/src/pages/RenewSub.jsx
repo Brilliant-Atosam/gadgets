@@ -41,8 +41,8 @@ const RenewSub = () => {
       <button
         className="btn btn-sub"
         onClick={() => {
-          callLogin();
-          // initializePayment(onSuccess, onClose);
+          // callLogin();
+          initializePayment(onSuccess, onClose);
         }}
       >
         Renew Store Subscription

@@ -21,9 +21,9 @@ const Subscribe = () => {
     await request.put(`/store/${storeId}`);
     window.location.href = "/";
   };
-  // const onSuccess = () => {
-  //   subscribe();
-  // };
+  const onSuccess = () => {
+    callLogin();
+  };
 
   const onClose = () => {
     window.location.reload();
@@ -44,8 +44,8 @@ const Subscribe = () => {
       <button
         className="btn btn-sub"
         onClick={() => {
-          callLogin();
-          // initializePayment(onSuccess, onClose);
+          // callLogin();
+          initializePayment(onSuccess, onClose);
         }}
       >
         Activate Store
