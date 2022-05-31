@@ -1,11 +1,16 @@
 import "./navbar.css";
-import { Autorenew, Menu, TrendingUp } from "@mui/icons-material";
+import {
+  Autorenew,
+  Menu,
+  TrendingUp,
+  AddShoppingCart,
+} from "@mui/icons-material";
 import LogoutSharp from "@mui/icons-material/Logout";
 import { useState } from "react";
 import { Link } from "react-router-dom";
 import { Logout } from "../../redux/login";
 import { useDispatch } from "react-redux";
-import { clearDrugs } from "../../redux/drugs";
+import { clearItems } from "../../redux/items";
 import { clearSales } from "../../redux/sales";
 
 const Navbar = ({ refresh }) => {
@@ -16,7 +21,7 @@ const Navbar = ({ refresh }) => {
   };
   const handleLogout = () => {
     dispatch(Logout());
-    dispatch(clearDrugs());
+    dispatch(clearItems());
     dispatch(clearSales());
   };
 
@@ -24,7 +29,7 @@ const Navbar = ({ refresh }) => {
     <div className="navbar-container">
       <div className="nav-left">
         <Link to="/">
-          <h1 className="logo">Pharm</h1>
+          <h1 className="logo">Home</h1>
         </Link>
         <li className="refresh" key={0} onClick={refresh}>
           Refresh <Autorenew />
@@ -32,9 +37,9 @@ const Navbar = ({ refresh }) => {
       </div>
       <div className="nav-right">
         <div className="menu-list">
-          <Link to="/drugs">
+          <Link to="/items">
             <li className="menu-item" key={1}>
-              Drugs <i className="fa-solid fa-pills"></i>
+              Items <AddShoppingCart />
             </li>
           </Link>
           <Link to="/sales">
@@ -42,7 +47,7 @@ const Navbar = ({ refresh }) => {
               Sales <TrendingUp />
             </li>
           </Link>
-          <Link to="/sales">
+          <Link to="/tuts">
             <li className="menu-item" key={3}>
               Tutorials <i className="fa-solid fa-chalkboard"></i>
             </li>
@@ -56,14 +61,19 @@ const Navbar = ({ refresh }) => {
           </li>
         </div>
         <div className={showMenu ? "menu-list-mb" : "no-show"}>
-          <Link to="/drugs">
+          <Link to="/items">
             <li key={5} className="menu-item-mb">
-              Drugs
+              Items
             </li>
           </Link>
           <Link to="/sales">
             <li key={6} className="menu-item-mb">
               Sales
+            </li>
+          </Link>
+          <Link to="/tuts">
+            <li key={6} className="menu-item-mb">
+              Tutorials
             </li>
           </Link>
           <li

@@ -5,25 +5,33 @@ import { Login } from "./pages/login/Login";
 import ProductDetails from "./pages/productDetails/ProductDetails";
 import Sales from "./pages/sales/Sales";
 import { useSelector } from "react-redux";
-import Drugs from "./pages/products/Drugs";
+import Items from "./pages/products/Items";
 import { Register } from "./pages/register/Register";
 import Subscribe from "./pages/Subscribe";
 import RenewSub from "./pages/RenewSub";
+import { Tutorials } from "./pages/tutorials/Tutorials";
 function App() {
   const store = useSelector((state) => state.store.Store);
   const sales = useSelector((state) => state.sales.Sales);
-  const drugs = useSelector((state) => state.drugs.Drugs);
+  const items = useSelector((state) => state.items.Items);
   return (
     <BrowserRouter>
       <div className="container">
         <Routes>
-          <Route path="/sub" element={<Subscribe />} />
-          <Route path="/renew" element={<RenewSub />} />
+          <Route path="/tuts" element={<Tutorials />} />
+          <Route
+            path="/sub"
+            element={store ? <Subscribe /> : <Navigate to="/login" />}
+          />
+          <Route
+            path="/renew"
+            element={store ? <RenewSub /> : <Navigate to="/login" />}
+          />
           <Route path="/register" element={<Register />} />
           <Route
             path="/login"
             element={
-              store && drugs !== null && sales !== null ? (
+              store && items !== null && sales !== null ? (
                 <Navigate to="/" />
               ) : (
                 <Login />
@@ -33,7 +41,7 @@ function App() {
           <Route
             path="/"
             element={
-              store && drugs !== null && sales !== null ? (
+              store && items !== null && sales !== null ? (
                 <Dashboard />
               ) : (
                 <Navigate to="/login" />
@@ -47,15 +55,15 @@ function App() {
             }
           />
           <Route
-            path="/drugs"
+            path="/items"
             element={
-              store && drugs !== null ? <Drugs /> : <Navigate to="/login" />
+              store && items !== null ? <Items /> : <Navigate to="/login" />
             }
           />
           <Route
-            path="/drugs/:id"
+            path="/items/:id"
             element={
-              store && drugs !== null && sales !== null ? (
+              store && items !== null && sales !== null ? (
                 <ProductDetails />
               ) : (
                 <Navigate to="/login" />

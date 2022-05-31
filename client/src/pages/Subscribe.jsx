@@ -1,12 +1,12 @@
 import { usePaystackPayment } from "react-paystack";
 import { useDispatch } from "react-redux";
-import { LoginFailure, LoginStart, LoginSuccess } from "../redux/login";
+import { LoginFailure, LoginStart, LoginSuccess, Logout } from "../redux/login";
 import { request } from "../request";
 const storeId = localStorage.getItem("storeId");
 const Subscribe = () => {
   const dispatch = useDispatch();
   const callLogin = async () => {
-    dispatch(LoginStart);
+    dispatch(LoginStart());
     try {
       const res = await request.post("/auth/renew", {
         id: storeId,
@@ -14,12 +14,8 @@ const Subscribe = () => {
       dispatch(LoginSuccess(res.data));
       window.location.href = "/";
     } catch (err) {
-      dispatch(LoginFailure());
+      dispatch(LoginFailure(err.response.data));
     }
-  };
-  const subscribe = async () => {
-    await request.put(`/store/${storeId}`);
-    window.location.href = "/";
   };
   const onSuccess = () => {
     callLogin();
@@ -32,7 +28,7 @@ const Subscribe = () => {
     currency: "GHS",
     amount: 3000,
     email: "atosam91@gmail.com",
-    publicKey: "pk_test_f925fc9d48c06b97cc20e2aede4a0198c2396557",
+    publicKey: 'pk_test_f925fc9d48c06b97cc20e2aede4a0198c2396557',
     channels: ["mobile_money"],
     label: `Store id: ${storeId}`,
   });
@@ -44,12 +40,18 @@ const Subscribe = () => {
       <button
         className="btn btn-sub"
         onClick={() => {
-          // callLogin();
           initializePayment(onSuccess, onClose);
         }}
       >
-        Activate Store
+        Activate Store - &#8373;30
       </button>
+      <span className="notice">
+        NB: If are not automatically redirected to your dashboard, after a
+        successful subsription,
+        <button className="link" onClick={() => dispatch(Logout())}>
+          click here
+        </button>{" "}
+      </span>
     </div>
   );
 };

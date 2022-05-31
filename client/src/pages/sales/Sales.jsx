@@ -80,8 +80,8 @@ const Sales = () => {
             annualSales={annualSalesFigure}
             overallSales={totalSalesFigure}
           />
-          <div className="drugs-container">
-            <div className="drugs-top">
+          <div className="items-container">
+            <div className="items-top">
               <h1 className="heading">
                 Sales History as at <b>{moment().format("dddd DD-MM-yy")}</b>
               </h1>
@@ -126,9 +126,9 @@ const Sales = () => {
             <Area
               type="monotone"
               dataKey="sales"
-              stroke="#087a75"
+              stroke="#067ed4"
               fillOpacity={1}
-              fill="#30e6dd1b"
+              fill="#3ea1e85e"
             />
           </AreaChart>
         </div>

@@ -23,7 +23,7 @@
   justify-content: center;
   width: 98%;
   padding: 10px;
-  border: 2px solid #087a75;
+  border: 2px solid #067ed4;
   border-radius: 7px;
 }
 .head-links {
@@ -40,7 +40,7 @@
   height: 90px;
   width: 90px;
   border-radius: 50%;
-  background-color: #087a75;
+  background-color: #067ed4;
   margin: 10px 0;
   display: flex;
   align-items: center;
@@ -66,21 +66,21 @@
   display: flex;
   align-items: center;
   justify-content: space-between;
-  border: 2px solid #087a75;
+  border: 2px solid #067ed4;
   border-radius: 5px;
   padding: 5px 10px;
   box-sizing: content-box;
   width: 90%;
 }
 input::placeholder{
-  color: #087a75;
+  color: #fff;
 }
 .search-icon{
-  color: #087a75;
+  color: #067ed4;
   cursor: pointer;
 }
 .search-input{
-  color: #087a75;
+  color: #067ed4;
   height: 100%;
   width: 80%;
   background-color: transparent;
@@ -95,29 +95,29 @@ input::placeholder{
 .search-input:focus{
   outline: none;
 }
-.expired{
-  color: red !important;
+.search-input::placeholder{
+  color: #067ed4;
 }
 .active{
-  color: #087a75;
+  color: #067ed4;
 }
 .out-stock{
   color: #868788 !important;
 }
-.drug-name{
-  color: #087a75;
+.item-name{
+  color: #067ed4;
   font-weight: 500;
 }
-.drugs-container {
+.items-container {
   width: 98%;
   height: 60vh;
-  border: 2px solid #087a75;
+  border: 2px solid #067ed4;
   border-radius: 7px;
   display: flex;
   flex-direction: column;
   align-items: center;
 }
-.drugs-top,
+.items-top,
 .sales-top {
   width: 100%;
   display: flex;
@@ -130,40 +130,40 @@ input::placeholder{
   width: 100%;
 }
 .chart,
-.dash-right-drug-info {
+.dash-right-item-info {
   display: flex;
   align-items: center;
   justify-content: center;
   flex-direction: column;
-  border: 2px solid #087a75;
+  border: 2px solid #067ed4;
   border-radius: 7px;
   height: fit-content !important;
   padding: 20px;
 }
-.drug-info-top{
+.item-info-top{
   display: flex;
   align-items: center;
   justify-content: space-between;
   width: 100%;
   padding: 0 20px;
 }
-.drug-info-top .btn{
+.item-info-top .btn{
 display: flex;
 gap: 10px;
 align-items: center;
-color: #087a75;
-border: 2px solid #087a75;
+color: #067ed4;
+border: 2px solid #067ed4;
 background-color: transparent;
 font-size: 12px;
 }
-.drug-info-top .btn .icon-link{
+.item-info-top .btn .icon-link{
   font-size: 14px;
 }
-.drug-info-top .btn:hover{
+.item-info-top .btn:hover{
   background: #fff;
 }
-.drug-info-content {
-  color: #087a75;
+.item-info-content {
+  color: #067ed4;
   display: flex;
   align-items: flex-start;
   justify-content: center;
@@ -171,7 +171,7 @@ font-size: 12px;
   margin-top: 20px;
   width: 100%;
 }
-.drug-info-left, .drug-info-right{
+.item-info-left, .item-info-right{
   display: flex;
   align-items: flex-start;
   flex-direction: column;
@@ -183,6 +183,10 @@ font-size: 12px;
 .value {
   font-weight: 600;
   margin-left: 10px;
+}
+.quick-stat-header-left, .timer{
+  display: flex;
+  align-items: center;
 }
 @media screen and (max-width: 770px) {
   .quick-stat-item {
@@ -210,7 +214,7 @@ font-size: 12px;
   .dash-right {
     flex: 1;
   }
-  .drug-info-content{
+  .item-info-content{
     flex-direction: column;
     justify-content: flex-start;
   }

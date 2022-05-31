@@ -12,8 +12,8 @@ import {
 import moment from "moment";
 import { useSelector, useDispatch } from "react-redux";
 import DataTable from "../../components/Table";
-import AddDrugForm from "./AddDrug";
-import { drugsStart, drugsSuccess, drugsFailure } from "../../redux/drugs";
+import AddItemForm from "./AddItem";
+import { itemsStart, itemsSuccess, itemsFailure } from "../../redux/items";
 import { salesStart, salesSuccess, salesFailure } from "../../redux/sales";
 import { useState, useEffect } from "react";
 import { request } from "../../request";
@@ -23,7 +23,7 @@ import Restock from "./Restock";
 import AlertComponent from "../../components/Alert";
 import { salesColumn } from "../../data";
 import Loading from "../../components/Loading";
-import SellDrugForm from "./Sell";
+import SellItemForm from "./Sell";
 import SnackbarAlert from "../../components/Snackback";
 const Dashboard = () => {
   const dispatch = useDispatch();
@@ -32,21 +32,21 @@ const Dashboard = () => {
   // REFRESHING DATA
   const handleRefresh = async () => {
     setLoading(true);
-    dispatch(drugsStart());
+    dispatch(itemsStart());
     dispatch(salesStart());
     try {
-      const drugs = await request.get(`/drugs?storeId=${storeId}`);
-      dispatch(drugsSuccess(drugs.data));
+      const items = await request.get(`/devices?storeId=${storeId}`);
+      dispatch(itemsSuccess(items.data));
       const sales = await request.get(`/sales?storeId=${storeId}`);
       dispatch(salesSuccess(sales.data));
       window.location.reload();
     } catch (err) {
-      dispatch(drugsFailure());
+      dispatch(itemsFailure());
       dispatch(salesFailure());
     }
     setLoading(false);
   };
-  const allDrugs = useSelector((state) => state.drugs.Drugs);
+  const allItems = useSelector((state) => state.items.Items);
   const allSales = useSelector((state) => state.sales.Sales);
   const store = useSelector((state) => state.store.Store);
   useEffect(() => {
@@ -55,9 +55,9 @@ const Dashboard = () => {
       (window.location.href = "/renew");
   }, [store]);
   const [search, setSearch] = useState("");
-  const [drugs, setDrugs] = useState(allDrugs);
+  const [items, setItems] = useState(allItems);
   const [sales, setSales] = useState(allSales);
-  const [drugsNum, setDrugsNum] = useState(drugs?.length);
+  const [itemsNum, setItemsNum] = useState(items?.length);
   const [openSnack, setOpenSnack] = useState(false);
   const salesToday = sales?.filter(
     (sale) => sale.createdAt?.indexOf(moment().format("DD/MM/YYYY")) > -1
@@ -86,10 +86,8 @@ const Dashboard = () => {
   const [name, setName] = useState("");
   const [stock, setStock] = useState();
   const [price, setPrice] = useState();
-  const [supplier, setSupplier] = useState("");
-  const [implications, setImplications] = useState("");
-  const [dosage, setDosage] = useState("");
-  const [expiry, setExpiry] = useState("");
+  const [brand, setBrand] = useState("");
+  const [specs, setSpecs] = useState("");
   const [id, setId] = useState("");
   const [openAlert, setOpenAlert] = useState(false);
   const [severity, setSeverity] = useState("success");
@@ -100,38 +98,29 @@ const Dashboard = () => {
   const handleAdd = async () => {
     setLoading(true);
     const drugDetails = {
+      id: (Math.floor(Math.random() * 100000) + 100000).toString().substring(1),
       storeId,
       name,
       stock,
-      supplier,
-      implications: implications.split(", "),
-      dosage,
+      brand,
+      specs: specs.split(", "),
       price,
-      expiry: moment(expiry).format("MM/DD/YYYY"),
-      id: (Math.floor(Math.random() * 100000) + 100000).toString().substring(1),
     };
     if (!name || !stock || !price) {
       setOpenSnack(true);
       setMessage("Provide valid data for name, stock or price");
       setLoading(false);
-    } else if (new Date(expiry) < new Date()) {
-      setMessage("Can't add expired item");
-      setOpenSnack(true);
-      setSeverity("warning");
-      setLoading(false);
     } else {
       try {
         setOpenSnack(true);
-        const res = await request.post("/drugs", drugDetails);
-        setDrugs([drugDetails, ...drugs]);
-        setDrugsNum(drugsNum + 1);
+        const res = await request.post("/devices", drugDetails);
+        setItems([drugDetails, ...items]);
+        setItemsNum(itemsNum + 1);
         setMessage(res.data);
         setName("");
-        setDosage("");
         setPrice("");
-        setExpiry("");
         setStock(0);
-        setImplications("");
+        setSpecs("");
         setLoading(false);
       } catch (err) {
         setMessage(err.response.data);
@@ -140,7 +129,7 @@ const Dashboard = () => {
     }
   };
   // SELL DRUG
-  const sellDrug = async () => {
+  const sellItem = async () => {
     if (!quantity || quantity < 1) {
       setSeverity("error");
       setMessage("Enter valid quantity");
@@ -148,8 +137,8 @@ const Dashboard = () => {
     } else {
       const salesDetails = {
         storeId,
-        drug_name: name,
-        drug_id: id,
+        device_name: name,
+        device_id: id,
         cost: price * quantity,
         quantity,
         createdAt: moment().format("DD/MM/YYYY h:mm:ss"),
@@ -173,55 +162,39 @@ const Dashboard = () => {
       setOpenSell(false);
     }
   };
-  const drugsColumn = [
+  const itemsColumn = [
     {
       field: "name",
-      headerName: "Drug",
+      headerName: "Item",
       width: 200,
-      renderCell: (params) => (
-        <p
-          className={
-            new Date(params.row.expiry) <= new Date()
-              ? "expired"
-              : params.row.stock < 0
-              ? "out-stock"
-              : "drug-name"
-          }
-        >
-          {params.row.name}
-        </p>
-      ),
+      renderCell: (params) => params.row.name,
     },
     {
       headerName: "Action",
       width: 170,
       renderCell: (params) => (
         <div className="action-btn">
-          <Link to={`/drugs/${params.row.id}`}>
+          <Link to={`/items/${params.row.id}`}>
             <Visibility className="action-icon" />
           </Link>
-
           <RestartAlt
             className="action-icon "
             onClick={() => {
               setName(params.row.name);
               setId(params.row.id);
-              setExpiry(params.row.expiry);
               setOpenStock(true);
             }}
           />
-          {new Date(params.row.expiry) > new Date() && (
-            <CurrencyExchange
-              className={params.row.stock < 1 ? "no-show" : `action-icon`}
-              onClick={() => {
-                setName(params.row.name);
-                setPrice(params.row.price);
-                setId(params.row.id);
-                setOpenSell(true);
-                setStock(params.row.stock);
-              }}
-            />
-          )}
+          <CurrencyExchange
+            className={params.row.stock < 1 ? "no-show" : `action-icon`}
+            onClick={() => {
+              setName(params.row.name);
+              setPrice(params.row.price);
+              setId(params.row.id);
+              setOpenSell(true);
+              setStock(params.row.stock);
+            }}
+          />
         </div>
       ),
     },
@@ -229,22 +202,6 @@ const Dashboard = () => {
     { field: "price", headerName: "Price", width: 100 },
     { field: "stock", headerName: "Stock", width: 130 },
     { field: "id", headerName: "ID", width: 70 },
-    {
-      headerName: "Status",
-      field: "expiry",
-      width: 100,
-      renderCell: (params) => (
-        <>
-          {new Date(params.row.expiry) < new Date() ? (
-            <span className="expired">Expired</span>
-          ) : params.row.stock < 1 ? (
-            <span className="out-stock">Out of Stock</span>
-          ) : (
-            <span className="active">Active</span>
-          )}
-        </>
-      ),
-    },
   ];
 
   const handleRestock = async () => {
@@ -256,7 +213,7 @@ const Dashboard = () => {
       setLoading(false);
     } else {
       try {
-        const res = await request.put("/drugs/restock/" + id, {
+        const res = await request.put("/devices/restock/" + id, {
           stock,
         });
         setMessage(res.data);
@@ -287,16 +244,14 @@ const Dashboard = () => {
       />
       {/* ADD DRUG FORM */}
 
-      <AddDrugForm
+      <AddItemForm
         open={openAdd}
         handleClose={() => setOpenAdd(false)}
         nameEvent={(e) => setName(e.target.value)}
         stockEvent={(e) => setStock(e.target.value)}
-        supplierEvent={(e) => setSupplier(e.target.value)}
-        implicationsEvent={(e) => setImplications(e.target.value)}
+        specsEvent={(e) => setSpecs(e.target.value)}
         priceEvent={(e) => setPrice(e.target.value)}
-        dosageEvent={(e) => setDosage(e.target.value)}
-        expiryEvent={(e) => setExpiry(e.target.value)}
+        brandEvent={(e) => setBrand(e.target.value)}
         handleAdd={() => handleAdd()}
       />
       <Restock
@@ -306,14 +261,14 @@ const Dashboard = () => {
         restockEvent={(e) => setStock(e.target.value)}
         handleRestock={() => handleRestock()}
       />
-      <SellDrugForm
+      <SellItemForm
         open={openSell}
         quantity={quantity}
         handleClose={() => setOpenSell(false)}
         drugName={name}
         price={price}
         quantityEvent={(e) => setQuantity(e.target.value)}
-        handleSellDrug={() => sellDrug()}
+        handleSellItem={() => sellItem()}
         stock={stock}
       />
       <SnackbarAlert
@@ -330,28 +285,25 @@ const Dashboard = () => {
       <div className="dashboard-container">
         <div className="dash-left">
           <QuickStat
-            drugsNum={drugsNum}
-            outStock={drugs?.filter((drug) => drug.stock < 1).length}
+            itemsNum={itemsNum}
+            outStock={items?.filter((item) => item.stock < 1).length}
             dailySales={dailySales}
-            expired={
-              drugs?.filter((drug) => new Date(drug.expiry) <= new Date())
-                .length
-            }
+            nextSub={moment(store.nextVerification).format("DD-MM-YY")}
           />
 
-          <div className="drugs-container">
+          <div className="items-container">
             <div className="nav-center">
               <input
                 type="text"
-                placeholder="Search drug"
+                placeholder="Search item"
                 className="search-input"
                 onChange={(e) => {
                   setSearch(e.target.value);
-                  setDrugs(
-                    allDrugs?.filter(
-                      (drug) =>
-                        drug.name &&
-                        drug.name
+                  setItems(
+                    allItems?.filter(
+                      (item) =>
+                        item.name &&
+                        item.name
                           .toLowerCase()
                           .indexOf(e.target.value.toLowerCase()) > -1
                     )
@@ -365,36 +317,36 @@ const Dashboard = () => {
                     className="search-icon"
                     onClick={() => {
                       setSearch("");
-                      setDrugs(allDrugs);
+                      setItems(allItems);
                     }}
                   />
                 )}
                 <Search className="search-icon" />
               </div>
             </div>
-            <div className="drugs-top">
-              <h1 className="heading">Drugs</h1>
+            <div className="items-top">
+              <h1 className="heading">Items in Store</h1>
               <div className="head-links">
                 <MedicalServices
                   className="icon-link mr10"
                   onClick={() => setOpenAdd(true)}
                 />
-                <Link to="/drugs">
+                <Link to="/items">
                   <ArrowForwardIos className="icon-link" />
                 </Link>
               </div>
             </div>
             <DataTable
-              rows={[...drugs]?.sort((a, b) =>
+              rows={[...items]?.sort((a, b) =>
                 a.name.toLowerCase() > b.name.toLowerCase() ? 1 : -1
               )}
-              columns={drugsColumn}
+              columns={itemsColumn}
             />
           </div>
         </div>
         <div className="dash-right chart">
           <div className="sales-top">
-            <h1 className="heading">Sales</h1>
+            <h1 className="heading">Sales Records</h1>
             <Link to="/sales">
               <ArrowForwardIos className="icon-link" />
             </Link>

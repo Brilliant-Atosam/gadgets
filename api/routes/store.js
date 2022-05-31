@@ -1,9 +1,8 @@
 const router = require("express").Router();
 const bcrypt = require("bcryptjs/dist/bcrypt");
 const moment = require("moment");
-// const { set } = require("mongoose");
 const Store = require("../models/Store");
-// GET ALL DRUGS
+// GET ALL DEVICES
 router.get("/", async (req, res) => {
   try {
     const stores = await Store.find();
@@ -48,10 +47,10 @@ router.put("/:id", async (req, res) => {
     console.log(err.message);
   }
 });
-// RESTOCK DRUG
+// RESTOCK DDEVICE
 router.put("/restock/:id", async (req, res) => {
   try {
-    await Drug.findOneAndUpdate(
+    await Device.findOneAndUpdate(
       { id: req.params.id },
       { $inc: { stock: req.body.stock } }
     );
@@ -61,10 +60,10 @@ router.put("/restock/:id", async (req, res) => {
     console.log(err.message);
   }
 });
-// DELETE DRUG
+// DELETE DDEVICE
 router.delete("/:id", async (req, res) => {
   try {
-    await Drug.findOneAndDelete({ id: req.params.id });
+    await Device.findOneAndDelete({ id: req.params.id });
     res.json("Deletion successful!");
   } catch (err) {
     res.status(500).json("Oooops! Try again");

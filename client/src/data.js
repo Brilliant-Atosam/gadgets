@@ -1,5 +1,5 @@
 import { CurrencyExchange, Visibility } from "@mui/icons-material";
-export const drugsColumn = [
+export const itemsColumn = [
   { field: "id", headerName: "ID", width: 70 },
   { field: "name", headerName: "Drug", width: 130 },
   { field: "stock", headerName: "Stock", width: 130 },
@@ -18,7 +18,7 @@ export const drugsColumn = [
 ];
 export const salesColumn = [
   { field: "id", headerName: "ID", width: 70 },
-  { field: "drug_name", headerName: "Drug", width: 200 },
+  { field: "item_name", headerName: "Drug", width: 200 },
   { field: "quantity", headerName: "Qty", width: 40 },
   { field: "cost", headerName: "Cost", width: 130 },
   {
@@ -28,7 +28,7 @@ export const salesColumn = [
     renderCell: (params) => <>{params.row.createdAt}</>,
   },
 ];
-export const drugSalesColumn = [
+export const itemSalesColumn = [
   { field: "id", headerName: "ID", width: 70 },
   {
     field: "createdAt",

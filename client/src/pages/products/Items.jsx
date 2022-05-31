@@ -12,7 +12,7 @@ import SnackbarAlert from "../../components/Snackback";
 import moment from "moment";
 import { useSelector, useDispatch } from "react-redux";
 import DataTable from "../../components/Table";
-import { drugsStart, drugsSuccess, drugsFailure } from "../../redux/drugs";
+import { itemsStart, itemsSuccess, itemsFailure } from "../../redux/items";
 import { TextField } from "@mui/material";
 import { useEffect, useState } from "react";
 import { request } from "../../request";
@@ -21,27 +21,27 @@ import Restock from "../dashboard/Restock";
 import Navbar from "../../components/nav/Navbar";
 import Loading from "../../components/Loading";
 import AlertComponent from "../../components/Alert";
-import SellDrugForm from "../dashboard/Sell";
-import AddDrugForm from "../dashboard/AddDrug";
+import SellItemForm from "../dashboard/Sell";
+import AddItemForm from "../dashboard/AddItem";
 import QuickStat from "./QuickStat";
-const Drugs = () => {
+const Items = () => {
   const storeId = localStorage.getItem("storeId");
   const dispatch = useDispatch();
   useEffect(() => {
-    dispatch(drugsStart);
+    dispatch(itemsStart);
     try {
       const fetchData = async () => {
-        const drugs = await request.get(`/drugs?storeId=${storeId}`);
-        dispatch(drugsSuccess(drugs.data));
+        const items = await request.get(`/items?storeId=${storeId}`);
+        dispatch(itemsSuccess(items.data));
       };
       fetchData();
     } catch (err) {
-      dispatch(drugsFailure(err.response.data));
+      dispatch(itemsFailure(err.response.data));
     }
   }, [dispatch, storeId]);
   const [openAdd, setOpenAdd] = useState(false);
-  const allDrugs = useSelector((state) => state.drugs.Drugs);
-  const [drugs, setDrugs] = useState(allDrugs);
+  const allItems = useSelector((state) => state.items.Items);
+  const [items, setItems] = useState(allItems);
   const [search, setSearch] = useState("");
   const [openSell, setOpenSell] = useState(false);
   const [openStock, setOpenStock] = useState(false);
@@ -50,20 +50,16 @@ const Drugs = () => {
   const [stock, setStock] = useState();
   const [price, setPrice] = useState();
   const [id, setId] = useState("");
-  const [expiry, setExpiry] = useState("");
-  const [supplier, setSupplier] = useState("");
-  const [implications, setImplications] = useState("");
-  const [dosage, setDosage] = useState("");
+  const [brand, setBrand] = useState("");
+  const [specs, setSpecs] = useState("");
   const [openAlert, setOpenAlert] = useState(false);
   const [severity, setSeverity] = useState("success");
   const [message, setMessage] = useState("");
   const [openSnack, setOpenSnack] = useState(false);
-  const [drugsNum, setDrugsNum] = useState(drugs?.length);
-  const outStock = drugs?.filter((drug) => drug.stock === 0).length;
-  const expired = drugs?.filter(
-    (drug) => new Date(drug.expiry) < new Date()
-  ).length;
-  const active = drugsNum - expired - outStock;
+  const [itemsNum, setItemsNum] = useState(items?.length);
+  const outStock = items?.filter((drug) => drug.stock === 0).length;
+  const [active, setAtive] = useState(itemsNum - outStock);
+
   //   ADD DRUG
   const handleAdd = async () => {
     setLoading(true);
@@ -71,35 +67,29 @@ const Drugs = () => {
       storeId,
       name,
       stock,
-      supplier,
-      implications: implications.split(", "),
-      dosage,
+      brand,
+      specs: specs.split(", "),
       price,
-      expiry: moment(expiry).format("MM/DD/YYYY"),
       id: (Math.floor(Math.random() * 100000) + 100000).toString().substring(1),
+      createdAt: moment().format("DD/MM/YYYY h:mm:ss"),
+      updatedAt: moment().format("DD/M/YYYY h:mm:ss"),
     };
     if (!name || !stock || !price) {
       setOpenSnack(true);
       setMessage("Provide valid data for name, stock or price");
       setLoading(false);
-    } else if (new Date(expiry) < new Date()) {
-      setMessage("Can't add expired item");
-      setOpenSnack(true);
-      setSeverity("warning");
-      setLoading(false);
     } else {
       try {
         setOpenSnack(true);
-        const res = await request.post("/drugs", drugDetails);
-        setDrugs([drugDetails, ...drugs]);
-        setDrugsNum(drugsNum + 1);
+        const res = await request.post("/devices", drugDetails);
+        setItems([drugDetails, ...items]);
+        setItemsNum(itemsNum + 1);
+        setAtive(active + 1);
         setMessage(res.data);
         setName("");
-        setDosage("");
         setPrice("");
-        setExpiry("");
         setStock(0);
-        setImplications("");
+        setSpecs("");
         setLoading(false);
       } catch (err) {
         setMessage(err.response.data);
@@ -107,16 +97,16 @@ const Drugs = () => {
       }
     }
   };
-  //   SELL DRUG
-  const sellDrug = async () => {
+  //   SELL ITEM
+  const sellItem = async () => {
     if (!quantity || quantity < 1) {
       setSeverity("error");
       setMessage("Enter valid quantity");
       setOpenAlert(true);
     } else {
       const salesDetails = {
-        drug_name: name,
-        drug_id: id,
+        device_name: name,
+        device_id: id,
         cost: price * quantity,
         quantity,
         storeId,
@@ -139,31 +129,19 @@ const Drugs = () => {
     }
   };
 
-  const drugsColumn = [
+  const itemsColumn = [
     {
       field: "name",
-      headerName: "Drug",
+      headerName: "Item",
       width: 200,
-      renderCell: (params) => (
-        <p
-          className={
-            new Date(params.row.expiry) <= new Date()
-              ? "expired"
-              : params.row.stock < 0
-              ? "out-stock"
-              : "drug-name"
-          }
-        >
-          {params.row.name}
-        </p>
-      ),
+      renderCell: (params) => params.row.name,
     },
     {
       headerName: "Action",
       width: 170,
       renderCell: (params) => (
         <div className="action-btn">
-          <Link to={`/drugs/${params.row.id}`}>
+          <Link to={`/items/${params.row.id}`}>
             <Visibility className="action-icon" />
           </Link>
 
@@ -172,22 +150,19 @@ const Drugs = () => {
             onClick={() => {
               setName(params.row.name);
               setId(params.row.id);
-              setExpiry(params.row.expiry);
               setOpenStock(true);
             }}
           />
-          {new Date(params.row.expiry) > new Date() && (
-            <CurrencyExchange
-              className={params.row.stock < 1 ? "no-show" : `action-icon`}
-              onClick={() => {
-                setName(params.row.name);
-                setPrice(params.row.price);
-                setId(params.row.id);
-                setOpenSell(true);
-                setStock(params.row.stock);
-              }}
-            />
-          )}
+          <CurrencyExchange
+            className={params.row.stock < 1 ? "no-show" : `action-icon`}
+            onClick={() => {
+              setName(params.row.name);
+              setPrice(params.row.price);
+              setId(params.row.id);
+              setOpenSell(true);
+              setStock(params.row.stock);
+            }}
+          />
         </div>
       ),
     },
@@ -195,26 +170,10 @@ const Drugs = () => {
     { field: "price", headerName: "Price", width: 100 },
     { field: "stock", headerName: "Stock", width: 130 },
     { field: "id", headerName: "ID", width: 70 },
-    {
-      headerName: "Status",
-      field: "expiry",
-      width: 100,
-      renderCell: (params) => (
-        <>
-          {new Date(params.row.expiry) < new Date() ? (
-            <span className="expired">Expired</span>
-          ) : params.row.stock < 1 ? (
-            <span className="out-stock">Out of Stock</span>
-          ) : (
-            <span className="active">Active</span>
-          )}
-        </>
-      ),
-    },
   ];
   const handleRestock = async () => {
     try {
-      const res = await request.put("/drugs/restock/" + id, { stock });
+      const res = await request.put("/devices/restock/" + id, { stock });
       setMessage(res.data);
       setSeverity("success");
       setOpenAlert(true);
@@ -230,13 +189,13 @@ const Drugs = () => {
   // REFRESHING DATA
   const handleRefresh = async () => {
     setLoading(true);
-    dispatch(drugsStart());
+    dispatch(itemsStart());
     try {
-      const drugs = await request.get(`/drugs?storeId=${storeId}`);
-      dispatch(drugsSuccess(drugs.data));
+      const items = await request.get(`/devices?storeId=${storeId}`);
+      dispatch(itemsSuccess(items.data));
       window.location.reload();
     } catch (err) {
-      dispatch(drugsFailure());
+      dispatch(itemsFailure());
     }
     setLoading(false);
   };
@@ -258,29 +217,26 @@ const Drugs = () => {
         handleClose={() => setOpenStock(false)}
         name={name}
         restockEvent={(e) => setStock(e.target.value)}
-        resetExpiry={(e) => setExpiry(e.target.value)}
         handleRestock={() => handleRestock()}
       />
-      <SellDrugForm
+      <SellItemForm
         open={openSell}
         quantity={quantity}
         handleClose={() => setOpenSell(false)}
         drugName={name}
         price={price}
         quantityEvent={(e) => setQuantity(e.target.value)}
-        handleSellDrug={() => sellDrug()}
+        handleSellItem={() => sellItem()}
         stock={stock}
       />
-      <AddDrugForm
+      <AddItemForm
         open={openAdd}
         handleClose={() => setOpenAdd(false)}
         nameEvent={(e) => setName(e.target.value)}
         stockEvent={(e) => setStock(e.target.value)}
-        supplierEvent={(e) => setSupplier(e.target.value)}
-        implicationsEvent={(e) => setImplications(e.target.value)}
+        specsEvent={(e) => setSpecs(e.target.value)}
         priceEvent={(e) => setPrice(e.target.value)}
-        dosageEvent={(e) => setDosage(e.target.value)}
-        expiryEvent={(e) => setExpiry(e.target.value)}
+        brandEvent={(e) => setBrand(e.target.value)}
         handleAdd={() => handleAdd()}
       />
       <SnackbarAlert
@@ -295,18 +251,13 @@ const Drugs = () => {
       />
       <div className="dashboard-container">
         <div className="dash-left">
-          <QuickStat
-            drugsNum={drugsNum}
-            outStock={outStock}
-            expired={expired}
-            active={active}
-          />
-          <div className="drugs-container drugs-page">
+          <QuickStat itemsNum={itemsNum} outStock={outStock} active={active} />
+          <div className="items-container items-page">
             <div className="add-drug-form">
               <h1 className="heading">Add new drug</h1>
               <TextField
                 margin="dense"
-                label="Drug name"
+                label="Item name"
                 type="text"
                 fullWidth
                 variant="outlined"
@@ -326,20 +277,20 @@ const Drugs = () => {
               />
               <TextField
                 margin="dense"
-                label="Supplier"
+                label="Brand"
                 type="text"
                 fullWidth
                 variant="outlined"
                 className="dial-input"
-                value={supplier}
-                onChange={(e) => setSupplier(e.target.value)}
+                value={brand}
+                onChange={(e) => setBrand(e.target.value)}
               />
               <TextField
                 margin="dense"
-                onChange={(e) => setImplications(e.target.value)}
-                label="Implications"
+                onChange={(e) => setSpecs(e.target.value)}
+                label="Specification"
                 type="text"
-                value={implications}
+                value={specs}
                 fullWidth
                 variant="outlined"
                 className="dial-input"
@@ -354,31 +305,11 @@ const Drugs = () => {
                 value={price}
                 className="dial-input"
               />
-              <TextField
-                margin="dense"
-                label="Dosage"
-                type="text"
-                fullWidth
-                variant="outlined"
-                value={dosage}
-                onChange={(e) => setDosage(e.target.value)}
-                className="dial-input"
-              />
-              <TextField
-                margin="dense"
-                label="Dosage"
-                type="date"
-                fullWidth
-                variant="outlined"
-                value={expiry}
-                onChange={(e) => setExpiry(e.target.value)}
-                className="dial-input"
-              />
               <button
                 className="btn add-drug-btn mt10"
                 onClick={() => handleAdd()}
               >
-                <Add className="mr10" /> Add Drug
+                <Add className="mr10" /> Add Item
               </button>
             </div>
           </div>
@@ -391,8 +322,8 @@ const Drugs = () => {
               className="search-input"
               onChange={(e) => {
                 setSearch(e.target.value);
-                setDrugs(
-                  allDrugs.filter(
+                setItems(
+                  allItems.filter(
                     (drug) =>
                       drug.name &&
                       drug.name
@@ -409,30 +340,30 @@ const Drugs = () => {
                   className="search-icon"
                   onClick={() => {
                     setSearch("");
-                    setDrugs(allDrugs);
+                    setItems(allItems);
                   }}
                 />
               )}
               <Search className="search-icon" />
             </div>
           </div>
-          <div className="drugs-top">
-            <h1 className="heading">Drugs</h1>
+          <div className="items-top">
+            <h1 className="heading">Items</h1>
             <div className="head-links">
               <MedicalServices
                 className="icon-link mr10"
                 onClick={() => setOpenAdd(true)}
               />
-              <Link to="/drugs">
+              <Link to="/items">
                 <ArrowForwardIos className="icon-link" />
               </Link>
             </div>
           </div>
           <DataTable
-            rows={[...drugs].sort((a, b) =>
+            rows={[...items].sort((a, b) =>
               a.name.toLowerCase() > b.name.toLowerCase() ? 1 : -1
             )}
-            columns={drugsColumn}
+            columns={itemsColumn}
           />
         </div>
       </div>
@@ -440,4 +371,4 @@ const Drugs = () => {
   );
 };
 
-export default Drugs;
+export default Items;

@@ -30,6 +30,7 @@ router.post("/renew", async (req, res) => {
       }
     );
     res.json(updatedStore);
+    console.log(updatedStore);
   } catch (err) {
     res.status(500).json("Oooops! Please try again");
     console.log(err);

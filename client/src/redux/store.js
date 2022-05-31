@@ -1,7 +1,7 @@
 import { configureStore, combineReducers } from "@reduxjs/toolkit";
 import login from "./login";
 import sales from "./sales";
-import drugs from "./drugs";
+import items from "./items";
 import {
   persistStore,
   persistReducer,
@@ -21,7 +21,7 @@ const persistConfig = {
 const rootReducer = combineReducers({
   store: login,
   sales,
-  drugs
+  items,
 });
 const persistedReducer = persistReducer(persistConfig, rootReducer);
 export const store = configureStore({

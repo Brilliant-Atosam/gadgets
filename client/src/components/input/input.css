@@ -1,7 +1,7 @@
 .input-control{
   max-width: 400px;
   width: 100%;
-  border: 2.2px solid #087a75;
+  border: 2.2px solid #fff;
   border-radius: 7px;
   height: 40px;
   padding: 5px 10px;
@@ -17,7 +17,7 @@
     height: 100%;
     font-weight: 600;
     letter-spacing: 5px;
-    color: #087a75;
+    color: #fff;
     background-color: transparent;
 }
 .input:focus{

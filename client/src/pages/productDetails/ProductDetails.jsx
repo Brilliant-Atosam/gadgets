@@ -18,8 +18,8 @@ import {
   XAxis,
   YAxis,
 } from "recharts";
-import { data, drugSalesColumn } from "../../data";
-import FormDialog from "./EditDrug";
+import { data, itemSalesColumn } from "../../data";
+import FormDialog from "./EditItem";
 import { useState } from "react";
 import ResponsiveDialog from "../../components/Dialog";
 import AlertComponent from "../../components/Alert";
@@ -32,15 +32,19 @@ import Restock from "../dashboard/Restock";
 const ProductDetails = () => {
   const dispatch = useDispatch();
   const { id } = useParams();
-  const drug = useSelector((state) =>
-    state.drugs.Drugs.find((drug) => drug.id === id)
+  const storeId = localStorage.getItem("storeId");
+  const [item, setItem] = useState(
+    useSelector((state) => state.items.Items.find((item) => item.id === id))
   );
   const [openEdit, setOpenEdit] = useState(false);
   const [openRestock, setOpenRestock] = useState(false);
   const [stock, setStock] = useState(0);
-
+  const [name, setName] = useState(item.name);
+  const [brand, setBrand] = useState(item.brand);
+  const [specs, setSpecs] = useState(item.specs.toString());
+  const [price, setPrice] = useState(item.price);
   const salesHistory = useSelector((state) =>
-    state.sales.Sales.filter((sale) => sale.drug_id === id)
+    state.sales.Sales.filter((sale) => sale.item_id === id)
   );
   const [sales, setSales] = useState(salesHistory);
   let [totalSalesFigure, setTotalSalesFigure] = useState(
@@ -59,7 +63,6 @@ const ProductDetails = () => {
   let [dailySalesFigure, setDailySalesFigure] = useState(
     dailySalesFigures.length > 0 ? dailySalesFigures.reduce((a, b) => a + b) : 0
   );
-  console.log(dailySalesFigure);
   const salesMonth = salesHistory?.filter(
     (sale) => sale?.createdAt?.indexOf(moment().format("/MM/YYYY")) > -1
   );
@@ -80,9 +83,9 @@ const ProductDetails = () => {
       ? annualSalesFigures?.reduce((a, b) => a + b)
       : 0
   );
-  const deleteDrug = async () => {
+  const deleteItem = async () => {
     try {
-      const res = await request.delete(`/drugs/${id}`);
+      const res = await request.delete(`/devices/${id}`);
       alert(res.data);
       window.location.href = "/";
     } catch (err) {}
@@ -104,9 +107,9 @@ const ProductDetails = () => {
       setOpenAlert(true);
     } else {
       const salesDetails = {
-        drug_name: drug.name,
-        drug_id: id,
-        cost: drug.price * quantity,
+        item_name: item.name,
+        item_id: id,
+        cost: item.price * quantity,
         quantity,
         createdAt: moment().format("DD/MM/YYYY"),
         id: (Math.floor(Math.random() * 100000) + 100000)
@@ -141,7 +144,7 @@ const ProductDetails = () => {
       setLoading(false);
     } else {
       try {
-        const res = await request.put("/drugs/restock/" + id, {
+        const res = await request.put("/devices/restock/" + id, {
           stock,
         });
         setMessage(res.data);
@@ -158,13 +161,33 @@ const ProductDetails = () => {
       setLoading(false);
     }
   };
+  const handleEdit = async () => {
+    const itemDetails = {
+      name,
+      brand,
+      specs: specs.split(", "),
+      price,
+      createdAt: item.createdAt,
+      id: item.id,
+      stock: item.stock,
+    };
+    try {
+      await request.put(`/devices/${id}`, itemDetails);
+      setItem(itemDetails);
+      setOpenAlert(true);
+      setMessage("Edited successfully");
+    } catch (err) {
+      setMessage(err.response.data);
+      setSeverity("error");
+    }
+  };
   const [loading, setLoading] = useState(false);
   // REFRESHING DATA
   const handleRefresh = async () => {
     setLoading(true);
     dispatch(salesStart());
     try {
-      const sales = await request.get("/sales");
+      const sales = await request.get(`/sales?storeId=${storeId}`);
       dispatch(salesSuccess(sales.data));
       window.location.reload();
     } catch (err) {
@@ -184,19 +207,31 @@ const ProductDetails = () => {
       />
       <ResponsiveDialog
         open={openDial}
-        DialContent={`If you proceed with this action, ${drug.name} will be deleted.`}
-        title={`Delete ${drug.name}`}
+        DialContent={`If you proceed with this action, ${item.name} will be deleted.`}
+        title={`Delete ${item.name}`}
         handleClose={() => setOpenDial(false)}
         option1="Cancel"
         option2="Delete"
-        event={() => deleteDrug()}
+        event={() => deleteItem()}
       />
-      <FormDialog open={openEdit} handleClose={() => setOpenEdit(false)} />
+      <FormDialog
+        open={openEdit}
+        handleClose={() => setOpenEdit(false)}
+        name={name}
+        nameEvent={(e) => setName(e.target.value)}
+        brand={brand}
+        brandEvent={(e) => setBrand(e.target.value)}
+        specs={specs}
+        specsEvent={(e) => setSpecs(e.target.value)}
+        price={price}
+        priceEvent={(e) => setPrice(e.target.value)}
+        handleEdit={() => handleEdit()}
+      />
       <SellDial
         open={openSell}
-        drugName={drug.name}
-        stock={drug.stock}
-        price={drug.price}
+        itemName={item.name}
+        stock={item.stock}
+        price={item.price}
         handleClose={() => setOpenSell(false)}
         quantity={quantity}
         event={(e) => setQuantity(e.target.value)}
@@ -205,7 +240,7 @@ const ProductDetails = () => {
       <Restock
         openStock={openRestock}
         handleClose={() => setOpenRestock(false)}
-        name={drug?.name}
+        name={item?.name}
         restockEvent={(e) => setStock(e.target.value)}
         handleRestock={() => handleRestock()}
       />
@@ -217,11 +252,11 @@ const ProductDetails = () => {
             monthlySales={monthlySalesFigure}
             annualSales={annualSalesFigure}
           />
-          <div className="drugs-container">
-            <div className="drugs-top">
-              <h1 className="heading">Drug Sales history</h1>
+          <div className="items-container">
+            <div className="items-top">
+              <h1 className="heading">Item Sales history</h1>
               <div className="head-links">
-                {new Date(drug.expiry) > new Date() && (
+                {item.stock > 0 && (
                   <CurrencyExchange
                     className="icon-link mr10"
                     onClick={() => setOpenSell(true)}
@@ -245,69 +280,55 @@ const ProductDetails = () => {
                 rows={[...sales]?.sort((a, b) =>
                   a.createdAt.toString() < b.createdAt.toString() ? 1 : -1
                 )}
-                columns={drugSalesColumn}
+                columns={itemSalesColumn}
               />
             )}
           </div>
         </div>
         <div className="dash-right">
-          <div className="dash-right-drug-info mb20">
-            <div className="drug-info-top">
-              <h1 className="heading">Drug Details</h1>
+          <div className="dash-right-item-info mb20">
+            <div className="item-info-top">
+              <h1 className="heading">Item Details</h1>
               <button
                 className="btn"
                 onClick={() => setOpenSell(true)}
-                disabled={new Date(drug.expiry) < new Date()}
+                disabled={new Date(item.expiry) < new Date()}
               >
                 Sell
                 <CurrencyExchange className="icon-link" />
               </button>
             </div>
-            <div className="drug-info-content">
-              <div className="drug-info-left">
-                <div className="drug-info-key-vale">
+            <div className="item-info-content">
+              <div className="item-info-left">
+                <div className="item-info-key-vale">
                   <span className="key">Name</span>:
-                  <span className="value">{drug?.name}</span>
+                  <span className="value">{item?.name}</span>
                 </div>
-                <div className="drug-info-key-vale">
-                  <span className="key">Supplier</span>:
-                  <span className="value">{drug?.supplier}</span>
+                <div className="item-info-key-vale">
+                  <span className="key">Brand</span>:
+                  <span className="value">{item?.brand}</span>
                 </div>
-                <div className="drug-info-key-vale">
+                <div className="item-info-key-vale">
                   <span className="key">Price</span>:
-                  <span className="value">&#8373;{drug?.price}</span>
-                </div>
-                <div className="drug-info-key-vale">
-                  <span className="key">Stock</span>:
-                  <span className="value">{drug?.stock}</span>
+                  <span className="value">&#8373;{item?.price}</span>
                 </div>
               </div>
-              <div className="drug-info-right">
-                <div className="drug-info-key-vale">
+              <div className="item-info-right">
+                <div className="item-info-key-vale">
+                  <span className="key">Stock</span>:
+                  <span className="value">{item?.stock}</span>
+                </div>
+                <div className="item-info-key-vale">
                   <span className="key">Status</span>:
                   <span className="value">
-                    {new Date(drug?.expiry) < new Date() ? (
-                      <span className="expired">Expired</span>
-                    ) : drug.stock < 1 ? (
-                      <span className="out-stock">Out of stock</span>
-                    ) : (
-                      <span className="active">Active</span>
-                    )}
+                    {item.stock < 1 ? "Out of stock" : "Instock"}
                   </span>
                 </div>
-                <div className="drug-info-key-vale">
-                  <span className="key">Implications</span>:
+                <div className="item-info-key-vale">
+                  <span className="key">Specifications</span>:
                   <span className="value">
-                    {drug.implications?.toString().replace(",", ", ")}
+                    {item.specs?.toString().replace(",", ", ")}
                   </span>
-                </div>
-                <div className="drug-info-key-vale">
-                  <span className="key">Dosage</span>:
-                  <span className="value">{drug?.dosage}</span>
-                </div>
-                <div className="drug-info-key-vale">
-                  <span className="key">Expiry</span>:
-                  <span className="value">{drug?.expiry}</span>
                 </div>
               </div>
             </div>
@@ -315,7 +336,7 @@ const ProductDetails = () => {
           <div className="chart">
             <div className="dash-right-top">
               <h1 className="heading mb20">
-                Annual Sales Performance Area Chart of {drug?.name} in
+                Annual Sales Performance Area Chart of {item?.name} in
                 {moment().format(" yyyy")}
               </h1>
             </div>

@@ -1,7 +1,4 @@
-import React, { useEffect, useState } from "react";
-import moment from "moment";
-import { useSelector } from "react-redux";
-const QuickStat = ({ drugsNum, outStock, active, expired }) => {
+const QuickStat = ({ drugsNum, outStock, active }) => {
   return (
     <div className="quick-stat">
       <div className="quick-stat-header">
@@ -13,7 +10,7 @@ const QuickStat = ({ drugsNum, outStock, active, expired }) => {
       <div className="quick-stat-container">
         <div className="quick-stat-item">
           <span className="number">{drugsNum}</span>
-          <span className="desc">drugs</span>
+          <span className="desc">Items</span>
         </div>
         <div className="quick-stat-item">
           <span className="number">{outStock}</span>
@@ -21,15 +18,9 @@ const QuickStat = ({ drugsNum, outStock, active, expired }) => {
         </div>
         <div className="quick-stat-item">
           <span className="number">
-            <b>{expired}</b>
-          </span>
-          <span className="desc">Expired</span>
-        </div>
-        <div className="quick-stat-item">
-          <span className="number">
             <b>{active}</b>
           </span>
-          <span className="desc">Active</span>
+          <span className="desc">In stock</span>
         </div>
       </div>
     </div>

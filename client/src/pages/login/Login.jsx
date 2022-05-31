@@ -6,7 +6,7 @@ import { request } from "../../request";
 import Loading from "../../components/Loading";
 import { LoginStart, LoginSuccess, LoginFailure } from "../../redux/login";
 import { useDispatch } from "react-redux";
-import { drugsFailure, drugsStart, drugsSuccess } from "../../redux/drugs";
+import { itemsFailure, itemsStart, itemsSuccess } from "../../redux/items";
 import { salesFailure, salesStart, salesSuccess } from "../../redux/sales";
 import { Link } from "react-router-dom";
 export const Login = () => {
@@ -26,7 +26,7 @@ export const Login = () => {
       setMessage("Invalid login input");
       setLoading(false);
     } else {
-      dispatch(LoginStart);
+      dispatch(LoginStart());
       try {
         const res = await request.post("/auth", {
           id,
@@ -37,17 +37,17 @@ export const Login = () => {
         setMessage("Login successful. Redirecting to dashoard");
         dispatch(LoginSuccess(res.data));
         localStorage.setItem("storeId", id);
-        dispatch(drugsStart);
+        dispatch(itemsStart);
         dispatch(salesStart);
         if (new Date(res.data.nextVerification) < new Date()) {
           window.location.href = "/renew";
         }
-        const drugs = await request.get(`/drugs?storeId=${id}`);
-        dispatch(drugsSuccess(drugs.data));
+        const items = await request.get(`/devices?storeId=${id}`);
+        dispatch(itemsSuccess(items.data));
         const sales = await request.get(`/sales?storeId=${id}`);
         dispatch(salesSuccess(sales.data));
       } catch (err) {
-        dispatch(drugsFailure(err.response.data));
+        dispatch(itemsFailure(err.response.data));
         dispatch(salesFailure(err.response.data));
         dispatch(LoginFailure(err.response.data));
         setOpen(true);

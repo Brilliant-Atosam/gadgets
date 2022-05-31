@@ -7,28 +7,30 @@ import {
   DialogContentText,
   DialogTitle,
 } from "@mui/material";
-import { Add, Close } from "@mui/icons-material";
-export default function AddDrugForm({
+import { Close, Check } from "@mui/icons-material";
+export default function FormDialog({
   open,
   handleClose,
-  handleAdd,
+  name,
   nameEvent,
-  stockEvent,
-  supplierEvent,
-  implicationsEvent,
+  brand,
+  brandEvent,
+  specs,
+  specsEvent,
+  price,
   priceEvent,
-  dosageEvent,
-  expiryEvent,
+  handleEdit,
 }) {
   return (
     <div>
       <Dialog open={open} onClose={handleClose}>
-        <DialogTitle className="dial-heading">ADD/EDIT DRUG FORM</DialogTitle>
+        <DialogTitle className="dial-heading">ADD/EDIT ITEM FORM</DialogTitle>
         <DialogContent>
           <DialogContentText>Kindly fill all fields</DialogContentText>
           <TextField
             margin="dense"
-            label="Drug name"
+            label="Item name"
+            value={name}
             type="text"
             fullWidth
             variant="outlined"
@@ -37,27 +39,20 @@ export default function AddDrugForm({
           />
           <TextField
             margin="dense"
-            label="stock"
-            type="number"
+            label="Brand"
+            type="text"
             fullWidth
+            value={brand}
             variant="outlined"
             className="dial-input"
-            onChange={stockEvent}
+            onChange={brandEvent}
           />
           <TextField
             margin="dense"
-            label="Supplier"
+            onChange={specsEvent}
+            label="Specifications"
             type="text"
-            fullWidth
-            variant="outlined"
-            className="dial-input"
-            onChange={supplierEvent}
-          />
-          <TextField
-            margin="dense"
-            onChange={implicationsEvent}
-            label="Implications"
-            type="text"
+            value={specs}
             fullWidth
             variant="outlined"
             className="dial-input"
@@ -67,35 +62,18 @@ export default function AddDrugForm({
             onChange={priceEvent}
             label="Price"
             type="number"
+            value={price}
             fullWidth
             variant="outlined"
             className="dial-input"
-          />
-          <TextField
-            margin="dense"
-            label="Dosage"
-            type="text"
-            fullWidth
-            variant="outlined"
-            onChange={dosageEvent}
-            className="dial-input"
-          />
-          <TextField
-            id="date"
-            margin="dense"
-            label="Expiry date"
-            type="date"
-            onChange={expiryEvent}
-            variant="outlined"
-            fullWidth
           />
         </DialogContent>
         <DialogActions>
           <Button onClick={handleClose}>
             <Close className="dial-icon cancel" />
           </Button>
-          <Button onClick={handleAdd}>
-            <Add className="dial-icon" />
+          <Button onClick={handleEdit}>
+            <Check />
           </Button>
         </DialogActions>
       </Dialog>
