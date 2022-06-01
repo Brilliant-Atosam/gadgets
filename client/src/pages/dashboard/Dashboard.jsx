@@ -265,7 +265,7 @@ const Dashboard = () => {
         open={openSell}
         quantity={quantity}
         handleClose={() => setOpenSell(false)}
-        drugName={name}
+        itemName={name}
         price={price}
         quantityEvent={(e) => setQuantity(e.target.value)}
         handleSellItem={() => sellItem()}

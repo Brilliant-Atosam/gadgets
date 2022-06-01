@@ -1,13 +1,6 @@
-import React, { useEffect, useState } from "react";
 import moment from "moment";
-import { useSelector } from "react-redux";
-import {
-  LockClock,
-  MoreTimeSharp,
-  Timer,
-  TimerSharp,
-} from "@mui/icons-material";
-const QuickStat = ({ drugsNum, outStock, dailySales, expired, nextSub }) => {
+import { TimerSharp } from "@mui/icons-material";
+const QuickStat = ({ itemsNum, outStock, dailySales, nextSub }) => {
   return (
     <div className="quick-stat">
       <div className="quick-stat-header">
@@ -23,7 +16,7 @@ const QuickStat = ({ drugsNum, outStock, dailySales, expired, nextSub }) => {
       </div>
       <div className="quick-stat-container">
         <div className="quick-stat-item">
-          <span className="number">{drugsNum}</span>
+          <span className="number">{itemsNum}</span>
           <span className="desc">Items</span>
         </div>
         <div className="quick-stat-item">

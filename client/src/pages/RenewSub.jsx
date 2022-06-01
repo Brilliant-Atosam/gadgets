@@ -1,7 +1,6 @@
-import { Key } from "@mui/icons-material";
 import { LoginStart, LoginSuccess, LoginFailure, Logout } from "../redux/login";
 import { usePaystackPayment } from "react-paystack";
-import { useSelector, useDispatch } from "react-redux";
+import {  useDispatch } from "react-redux";
 import { request } from "../request";
 const storeId = localStorage.getItem("storeId");
 const RenewSub = () => {
@@ -29,7 +28,7 @@ const RenewSub = () => {
     currency: "GHS",
     amount: 2000,
     email: "atosam91@gmail.com",
-    publicKey: "pk_test_f925fc9d48c06b97cc20e2aede4a0198c2396557",
+    publicKey: "pk_live_5017792627bf13f97690448a69a46d0f4432d8a9",
     channels: ["mobile_money"],
     label: `Store id: ${storeId}`,
   });

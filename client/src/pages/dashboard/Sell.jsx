@@ -9,22 +9,22 @@ import {
 } from "@mui/material";
 import { Close, CurrencyExchange } from "@mui/icons-material";
 
-export default function SellDrugForm({
+export default function SellItemForm({
   open,
   handleClose,
-  drugName,
+  itemName,
   stock,
   price,
   quantity,
   quantityEvent,
-  handleSellDrug,
+  handleSellItem,
 }) {
   return (
     <div>
       <Dialog open={open} onClose={handleClose}>
-        <DialogTitle className="dial-heading">SELL DRUG</DialogTitle>
+        <DialogTitle className="dial-heading">SELL ITEM</DialogTitle>
         <DialogContent>
-          <DialogContentText>{drugName}</DialogContentText>
+          <DialogContentText>{itemName}</DialogContentText>
           <TextField
             autoFocus
             margin="dense"
@@ -45,7 +45,7 @@ export default function SellDrugForm({
           <Button onClick={handleClose}>
             <Close className="dial-icon cancel" />
           </Button>
-          <Button onClick={handleSellDrug}>
+          <Button onClick={handleSellItem}>
             <CurrencyExchange className="dial-icon" />
           </Button>
         </DialogActions>
