@@ -29,7 +29,7 @@ const RenewSub = () => {
     currency: "GHS",
     amount: 2000,
     email: "atosam91@gmail.com",
-    publicKey: process.env.REACT_APP_PAYSTACK_PK,
+    publicKey: "pk_test_f925fc9d48c06b97cc20e2aede4a0198c2396557",
     channels: ["mobile_money"],
     label: `Store id: ${storeId}`,
   });
