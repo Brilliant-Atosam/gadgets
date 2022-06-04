@@ -1,7 +1,6 @@
 const router = require("express").Router();
 const bcrypt = require("bcryptjs");
 const Store = require("../models/Store");
-const moment = require("moment");
 // LOGIN
 router.post("/", async (req, res) => {
   const { id, password } = req.body;
@@ -15,25 +14,22 @@ router.post("/", async (req, res) => {
       : res.json(store);
   } catch (err) {
     res.status(500).json("Oooops! Please try again");
-    console.log(err.messsages);
   }
 });
-// LOGIN again
-router.post("/renew", async (req, res) => {
-  const { id } = req.body;
+// LOGIN ADMIN
+router.post("/admin", async (req, res) => {
+  const { email, password } = req.body;
   try {
-    const updatedStore = await Store.findOneAndUpdate(
-      { id },
-      {
-        lastVerified: moment().format("MM/DD/YYYY"),
-        nextVerification: moment().add(30, "days").format("MM/DD/YYYY"),
-      }
-    );
-    res.json(updatedStore);
-    console.log(updatedStore);
+    if (
+      email !== process.env.LOGIN_EMAIL ||
+      password !== process.env.LOGIN_PASSWORD
+    ) {
+      res.status(409).send("Invalid login credentials");
+    } else {
+      res.json("Logged in!");
+    }
   } catch (err) {
     res.status(500).json("Oooops! Please try again");
-    console.log(err);
   }
 });
 

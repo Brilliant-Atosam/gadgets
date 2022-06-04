@@ -18,6 +18,7 @@ import { useEffect, useState } from "react";
 import { request } from "../../request";
 import { Link } from "react-router-dom";
 import Restock from "../dashboard/Restock";
+import Footer from "../../components/Footer";
 import Navbar from "../../components/nav/Navbar";
 import Loading from "../../components/Loading";
 import AlertComponent from "../../components/Alert";
@@ -367,6 +368,7 @@ const Items = () => {
           />
         </div>
       </div>
+      <Footer />
     </>
   );
 };

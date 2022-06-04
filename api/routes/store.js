@@ -47,17 +47,19 @@ router.put("/:id", async (req, res) => {
     console.log(err.message);
   }
 });
-// RESTOCK DDEVICE
-router.put("/restock/:id", async (req, res) => {
+// RESET PASSWOR DDEVICE
+router.put("/password/reset", async (req, res) => {
+  const { oldPassword, password } = req.body;
   try {
-    await Device.findOneAndUpdate(
-      { id: req.params.id },
-      { $inc: { stock: req.body.stock } }
-    );
-    res.json("Restocked successfully");
+    const store = await Store.findOne({ id: req.query.id });
+    if (!(await bcrypt.compare(oldPassword, store.password))) {
+      res.status(401).json("Wrong password!");
+    } else {
+      await store.updateOne({ password: await bcrypt.hash(password, 10) });
+      res.json("Reset was successful!");
+    }
   } catch (err) {
     res.status(500).json("Oooops! Try again");
-    console.log(err.message);
   }
 });
 // DELETE DDEVICE

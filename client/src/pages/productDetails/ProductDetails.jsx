@@ -18,7 +18,7 @@ import {
   XAxis,
   YAxis,
 } from "recharts";
-import { data, itemSalesColumn } from "../../data";
+import { itemSalesColumn } from "../../data";
 import FormDialog from "./EditItem";
 import { useState } from "react";
 import ResponsiveDialog from "../../components/Dialog";
@@ -29,6 +29,7 @@ import Loading from "../../components/Loading";
 import { salesFailure, salesStart, salesSuccess } from "../../redux/sales";
 import { useDispatch } from "react-redux";
 import Restock from "../dashboard/Restock";
+import Footer from "../../components/Footer";
 const ProductDetails = () => {
   const dispatch = useDispatch();
   const { id } = useParams();
@@ -195,6 +196,188 @@ const ProductDetails = () => {
     }
     setLoading(false);
   };
+  // jan
+  const janSales = salesHistory.filter(
+    (sale) => sale.createdAt.indexOf("/01/" + new Date().getFullYear()) > -1
+  );
+  let janFig = [];
+  janSales.forEach((s) => janFig.push(s.cost));
+  // feb
+  const febSales = salesHistory.filter(
+    (sale) => sale.createdAt.indexOf("/02/" + new Date().getFullYear()) > -1
+  );
+  let febFig = [];
+  febSales.forEach((s) => febFig.push(s.cost));
+  // mar
+  const marSales = salesHistory.filter(
+    (sale) => sale.createdAt.indexOf("/03/" + new Date().getFullYear()) > -1
+  );
+  let marFig = [];
+  marSales.forEach((s) => marFig.push(s.cost));
+  // apr
+  const aprSales = salesHistory.filter(
+    (sale) => sale.createdAt.indexOf("/04/" + new Date().getFullYear()) > -1
+  );
+  let aprFig = [];
+  aprSales.forEach((s) => aprFig.push(s.cost));
+  // may
+  const maySales = salesHistory.filter(
+    (sale) => sale.createdAt.indexOf("/05/" + new Date().getFullYear()) > -1
+  );
+  let mayFig = [];
+  maySales.forEach((s) => mayFig.push(s.cost));
+  // jun
+  const junSales = salesHistory.filter(
+    (sale) => sale.createdAt.indexOf("/06/" + new Date().getFullYear()) > -1
+  );
+  let junFig = [];
+  junSales.forEach((s) => junFig.push(s.cost));
+  // jul
+  const julSales = salesHistory.filter(
+    (sale) => sale.createdAt.indexOf("/07/" + new Date().getFullYear()) > -1
+  );
+  let julFig = [];
+  julSales.forEach((s) => julFig.push(s.cost));
+  // aug
+  const augSales = salesHistory.filter(
+    (sale) => sale.createdAt.indexOf("/08/" + new Date().getFullYear()) > -1
+  );
+  let augFig = [];
+  augSales.forEach((s) => augFig.push(s.cost));
+  // sep
+  const sepSales = salesHistory.filter(
+    (sale) => sale.createdAt.indexOf("/09/" + new Date().getFullYear()) > -1
+  );
+  let sepFig = [];
+  sepSales.forEach((s) => sepFig.push(s.cost));
+  // oct
+  const octSales = salesHistory.filter(
+    (sale) => sale.createdAt.indexOf("/10/" + new Date().getFullYear()) > -1
+  );
+  let octFig = [];
+  octSales.forEach((s) => octFig.push(s.cost));
+  // nov
+  const novSales = salesHistory.filter(
+    (sale) => sale.createdAt.indexOf("/11/" + new Date().getFullYear()) > -1
+  );
+  let novFig = [];
+  novSales.forEach((s) => novFig.push(s.cost));
+  // dec
+  const decSales = salesHistory.filter(
+    (sale) => sale.createdAt.indexOf("/12/" + new Date().getFullYear()) > -1
+  );
+  let decFig = [];
+  decSales.forEach((s) => decFig.push(s.cost));
+  const data = [
+    {
+      name: "Jan",
+      sales:
+        janFig.length > 1
+          ? janFig.reduce((a, b) => a + b)
+          : janFig.length === 1
+          ? janFig[0]
+          : 0,
+    },
+    {
+      name: "Feb",
+      sales:
+        febFig.length > 1
+          ? febFig.reduce((a, b) => a + b)
+          : febFig.length === 1
+          ? febFig[0]
+          : 0,
+    },
+    {
+      name: "Mar",
+      sales:
+        marFig.length > 1
+          ? marFig.reduce((a, b) => a + b)
+          : marFig.length === 1
+          ? marFig[0]
+          : 0,
+    },
+    {
+      name: "Apr",
+      sales:
+        aprFig.length > 1
+          ? aprFig.reduce((a, b) => a + b)
+          : aprFig.length === 1
+          ? aprFig[0]
+          : 0,
+    },
+    {
+      name: "May",
+      sales:
+        mayFig.length > 1
+          ? mayFig.reduce((a, b) => a + b)
+          : mayFig.length === 1
+          ? mayFig[0]
+          : 0,
+    },
+    {
+      name: "Jun",
+      sales:
+        junFig.length > 1
+          ? junFig.reduce((a, b) => a + b)
+          : junFig.length === 1
+          ? junFig[0]
+          : 0,
+    },
+    {
+      name: "Jul",
+      sales:
+        julFig.length > 1
+          ? julFig.reduce((a, b) => a + b)
+          : julFig.length === 1
+          ? julFig[0]
+          : 0,
+    },
+    {
+      name: "Aug",
+      sales:
+        augFig.length > 1
+          ? augFig.reduce((a, b) => a + b)
+          : augFig.length === 1
+          ? augFig[0]
+          : 0,
+    },
+    {
+      name: "Sep",
+      sales:
+        sepFig.length > 1
+          ? sepFig.reduce((a, b) => a + b)
+          : sepFig.length === 1
+          ? sepFig[0]
+          : 0,
+    },
+    {
+      name: "Oct",
+      sales:
+        octFig.length > 1
+          ? octFig.reduce((a, b) => a + b)
+          : octFig.length === 1
+          ? octFig[0]
+          : 0,
+    },
+    {
+      name: "Nov",
+      sales:
+        novFig.length > 1
+          ? novFig.reduce((a, b) => a + b)
+          : novFig.length === 1
+          ? novFig[0]
+          : 0,
+    },
+    {
+      name: "Dec",
+      sales:
+        decFig.length > 1
+          ? decFig.reduce((a, b) => a + b)
+          : decFig.length === 1
+          ? decFig[0]
+          : 0,
+    },
+  ];
   return (
     <>
       <Navbar refresh={() => handleRefresh()} />
@@ -372,6 +555,7 @@ const ProductDetails = () => {
           </div>
         </div>
       </div>
+      <Footer />
     </>
   );
 };

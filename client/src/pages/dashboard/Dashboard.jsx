@@ -25,9 +25,18 @@ import { salesColumn } from "../../data";
 import Loading from "../../components/Loading";
 import SellItemForm from "./Sell";
 import SnackbarAlert from "../../components/Snackback";
+import Footer from "../../components/Footer";
+import Subscribe from "../../components/Subscribe";
 const Dashboard = () => {
   const dispatch = useDispatch();
   const storeId = localStorage.getItem("storeId");
+  const [openSub, setOpenSub] = useState(false);
+  const [subTitle, setSubTitle] = useState("SERVICE SUBSCRIPTION");
+  const [subContent, setSubContent] = useState(
+    "Welcome! You need to subscribe in other to use this service."
+  );
+  const [btnText, setBtnText] = useState("Subscribe");
+  const [amount, setAmount] = useState(30);
   const [loading, setLoading] = useState(false);
   // REFRESHING DATA
   const handleRefresh = async () => {
@@ -50,9 +59,13 @@ const Dashboard = () => {
   const allSales = useSelector((state) => state.sales.Sales);
   const store = useSelector((state) => state.store.Store);
   useEffect(() => {
-    store.lastVerified === undefined && (window.location.href = "/sub");
-    new Date(store.nextVerification) < new Date() &&
-      (window.location.href = "/renew");
+    store.lastVerified === undefined && setOpenSub(true);
+    if (new Date(store.nextVerification) < new Date()) {
+      setAmount(20);
+      setSubTitle("SUBSCRIPTION RENEWAL");
+      setSubContent("Subscription for your store is due for renewal");
+      setBtnText("Renew");
+    }
   }, [store]);
   const [search, setSearch] = useState("");
   const [items, setItems] = useState(allItems);
@@ -230,8 +243,16 @@ const Dashboard = () => {
       setLoading(false);
     }
   };
+
   return (
     <>
+      <Subscribe
+        open={openSub}
+        amount={amount}
+        subTitle={subTitle}
+        subContent={subContent}
+        btnText={btnText}
+      />
       <Navbar refresh={() => handleRefresh()} />
       <Loading open={loading} />
       <AlertComponent
@@ -359,6 +380,7 @@ const Dashboard = () => {
           />
         </div>
       </div>
+      <Footer />
     </>
   );
 };

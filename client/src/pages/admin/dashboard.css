@@ -1,0 +1,101 @@
+.dashboard-container {
+  width: 100%;
+  background-color: #30e6dd1b;
+  min-height: calc(100vh - 60px);
+  padding: 20px;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  align-items: flex-start;
+}
+.dash-left {
+  width: 100%;
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  min-width: 320px;
+}
+
+.head-links {
+  display: flex;
+  align-items: center;
+}
+.quick-stat-container {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  width: 100%;
+}
+
+.quick-stat-header{
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+.quick-stat-item .number {
+  font-size: 14px;
+  margin-bottom: 5px;
+  font-weight: 600;
+}
+.quick-stat-item .desc {
+  font-size: 11px;
+}
+
+
+
+
+.search-icons{
+  display: flex;
+  align-items: center;
+}
+.search-input:focus{
+  outline: none;
+}
+
+.drugs-top,
+.sales-top {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 10px 20px;
+}
+.dash-right {
+  flex: 2;
+  width: 100%;
+}
+
+.drug-info-top .btn .icon-link{
+  font-size: 14px;
+}
+.drug-info-top .btn:hover{
+  background: #fff;
+}
+
+@media screen and (max-width: 500px) {
+  .dashboard-container {
+    flex-direction: column;
+    padding: 10px;
+  }
+  .quick-stat {
+    flex-wrap: wrap;
+  }
+  .quick-stat-item {
+    height: 80px;
+    width: 80px;
+    margin: 5px;
+  }
+  .dash-left {
+    width: 98vw;
+    margin: auto;
+  }
+  .dash-right {
+    flex: 1;
+  }
+  .drug-info-content{
+    flex-direction: column;
+    justify-content: flex-start;
+  }
+}

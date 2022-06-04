@@ -27,8 +27,8 @@ const Subscribe = () => {
   const initializePayment = usePaystackPayment({
     currency: "GHS",
     amount: 3000,
-    email: "atosam91@gmail.com",
-    publicKey: 'pk_test_f925fc9d48c06b97cc20e2aede4a0198c2396557',
+    email: "1bongostores@gmail.com",
+    publicKey: "pk_live_5017792627bf13f97690448a69a46d0f4432d8a9",
     channels: ["mobile_money"],
     label: `Store id: ${storeId}`,
   });
