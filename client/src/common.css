@@ -27,14 +27,14 @@
 }
 .action-icon {
   cursor: pointer;
-  color: #067ed4;
-  border: 2px solid #067ed4;
+  color: #087a75;
+  border: 2px solid #087a75;
   padding: 7px;
   border-radius: 4px;
   box-sizing: content-box;
 }
 .btn-sub{
-  background: #067ed4;
+  background: #087a75;
   color: white;
   padding: 10px 20px !important;
   box-sizing: content-box;
@@ -49,14 +49,14 @@
   font-weight: 200;
   font-size: 14px;
   margin-left: 10px;
-  color: #067ed4;
+  color: #087a75;
 }
 .over{
   z-index: 999999999999999 !important;
 }
 .icon-link {
   cursor: pointer;
-  color: #067ed4 !important;
+  color: #087a75 !important;
 }
 .no-show {
   display: none !important;
@@ -89,13 +89,13 @@
 .items-page {
   height: fit-content !important;
 }
-.add-drug-form {
+.add-item-form {
   width: 100%;
   height: fit-content;
   padding: 20px;
 }
-.add-drug-btn {
-  background: #067ed4;
+.add-item-btn {
+  background: #087a75;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -104,26 +104,26 @@
 }
 .dial-icon {
   font-size: 40px !important;
-  color: #067ed4;
+  color: #087a75;
 }
 .cancel {
   color: #bd1818;
 }
 .dial-heading {
-  color: #067ed4;
+  color: #087a75;
 }
-#drug-img {
+#item-img {
   display: none !important;
 }
 .dial-input {
-  color: #067ed4 !important;
+  color: #087a75 !important;
   font-weight: 600 !important;
   letter-spacing: 3px !important;
 }
 .file-picker {
   font-size: 60px !important;
   cursor: pointer;
-  color: #067ed4;
+  color: #087a75;
 }
 .img-preview {
   height: 100px;
@@ -149,7 +149,7 @@
   background: #30e6dd1b;
 }
 ::-webkit-scrollbar-thumb {
-  background: #067ed4;
+  background: #087a75;
   border-radius: 10px;
 }
 .notice{
@@ -168,7 +168,7 @@
 .footer{
   width: 100%;
   padding: 20px;
-  background-color: #579be9b6;
+  background-color: #559379a5;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -177,6 +177,9 @@
   display: flex;
   flex-wrap: wrap;
   gap: 10px;
+}
+.adm{
+  color: #333;
 }
 .footer-links{
   cursor: pointer;

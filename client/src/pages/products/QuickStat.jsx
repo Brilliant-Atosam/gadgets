@@ -1,4 +1,4 @@
-const QuickStat = ({ drugsNum, outStock, active }) => {
+const QuickStat = ({ itemsNum, outStock, active, expired }) => {
   return (
     <div className="quick-stat">
       <div className="quick-stat-header">
@@ -9,8 +9,8 @@ const QuickStat = ({ drugsNum, outStock, active }) => {
       </div>
       <div className="quick-stat-container">
         <div className="quick-stat-item">
-          <span className="number">{drugsNum}</span>
-          <span className="desc">Items</span>
+          <span className="number">{itemsNum}</span>
+          <span className="desc">items</span>
         </div>
         <div className="quick-stat-item">
           <span className="number">{outStock}</span>
@@ -18,9 +18,15 @@ const QuickStat = ({ drugsNum, outStock, active }) => {
         </div>
         <div className="quick-stat-item">
           <span className="number">
+            <b>{expired}</b>
+          </span>
+          <span className="desc">Expired</span>
+        </div>
+        <div className="quick-stat-item">
+          <span className="number">
             <b>{active}</b>
           </span>
-          <span className="desc">In stock</span>
+          <span className="desc">Active</span>
         </div>
       </div>
     </div>

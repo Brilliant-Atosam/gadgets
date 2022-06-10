@@ -1,5 +1,5 @@
 const router = require("express").Router();
-const Drug = require("../models/Device");
+const Item = require("../models/Item");
 const Sales = require("../models/Sales");
 // GET ALL SALES
 router.get("/", async (req, res) => {
@@ -13,29 +13,29 @@ router.get("/", async (req, res) => {
 });
 // ADD SALES
 router.post("/", async (req, res) => {
-  const { id, device_id, device_name, quantity, cost, storeId, createdAt } =
+  const { item_id, item_name, quantity, cost, storeId, createdAt, id, mode } =
     req.body;
   try {
-    const device = await Drug.findOne({ id: device_id });
-    if (device.stock < quantity) {
+    const item = await Item.findOne({ id: item_id });
+    if (item.stock < quantity) {
       res.status(401).json("Insufficient stock!");
     } else {
       const newSales = new Sales({
-        id,
+        item_id,
+        item_name,
         storeId,
-        device_id,
-        device_name,
         quantity,
         cost,
         createdAt,
+        id,
+        mode,
       });
+      await item.updateOne({ stock: item.stock - quantity });
       await newSales.save();
-      await device.updateOne({ stock: device.stock - quantity });
       res.json("Sales completed successfully");
     }
   } catch (err) {
     res.status(500).json("Oooops! Please try again later");
-    console.log(err.message);
   }
 });
 module.exports = router;

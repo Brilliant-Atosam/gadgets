@@ -1,16 +1,16 @@
 import { request } from "../request";
-import { itemsStart, itemsSuccess, itemsFailure } from "./items";
+import { drugsStart, drugsSuccess, drugsFailure } from "./drugs";
 import { salesStart, salesSuccess, salesFailure } from "./sales";
 export const RefreshAllData = async (dispatch) => {
-  dispatch(itemsStart());
+  dispatch(drugsStart());
   dispatch(salesStart());
   try {
-    const items = await request.get("/items");
-    dispatch(itemsSuccess(items.data));
-    const sales = await request.get("/items");
+    const drugs = await request.get("/drugs");
+    dispatch(drugsSuccess(drugs.data));
+    const sales = await request.get("/drugs");
     dispatch(salesSuccess(sales.data));
   } catch (err) {
-    dispatch(itemsFailure());
+    dispatch(drugsFailure());
     dispatch(salesFailure());
   }
 };

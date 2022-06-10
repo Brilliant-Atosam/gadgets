@@ -1,8 +1,8 @@
 .login-container {
   height: 100vh;
   background: linear-gradient(
-      rgba(48, 148, 230, 0.404) 100%,
-      rgba(48, 148, 230, 0.404) 100%
+      rgba(32, 133, 128, 0.562) 100%,
+      rgba(32, 133, 128, 0.562) 100%
     ),
     url("../../bg.jpg");
   background-size: 100% 100%;
@@ -22,7 +22,7 @@
 }
 .login-greetings {
   font-weight: 300;
-  color: #fff;
+  color: white;
   width: 100%;
   margin: 20px auto;
   text-align: center;
@@ -32,7 +32,7 @@
   width: 100%;
   max-width: 400px;
   background: #fff;
-  color: #067ed4;
+  color: #087a75;
 }
 @media screen and (max-width: 770px) {
   .login-container {

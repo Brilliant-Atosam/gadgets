@@ -47,7 +47,7 @@ export const Tutorials = () => {
           </div>
           <div className="icon-meaning">
             <Edit className="icon" />
-            <span className="meaning">Edit item info</span>
+            <span className="meaning">Edit item details</span>
           </div>
         </div>
       </div>

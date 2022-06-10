@@ -2,35 +2,29 @@ import "./common.css";
 import { BrowserRouter, Navigate, Route, Routes } from "react-router-dom";
 import Dashboard from "./pages/dashboard/Dashboard";
 import { Login } from "./pages/login/Login";
-import { AdminLogin } from "./pages/adminLogin/Login";
 import ProductDetails from "./pages/productDetails/ProductDetails";
 import Sales from "./pages/sales/Sales";
 import { useSelector } from "react-redux";
 import Items from "./pages/products/Items";
 import { Register } from "./pages/register/Register";
-import Subscribe from "./pages/Subscribe";
-import RenewSub from "./pages/RenewSub";
-import AdminDashboard from "./pages/admin/AdminDashboard";
 import { Tutorials } from "./pages/tutorials/Tutorials";
+import Admin from "./pages/adminDashboard/Admin";
+import { AdminLogin } from "./pages/adminLogin/AdminLogin";
 function App() {
-  const store = useSelector((state) => state.store?.Store);
-  const sales = useSelector((state) => state.sales?.Sales);
-  const items = useSelector((state) => state.items?.Items);
-  const admin = useSelector((state) => state.admin?.Admin);
-  const clients = useSelector((state) => state.clients?.Clients);
+  const store = useSelector((state) => state.store.Store);
+  const sales = useSelector((state) => state.sales.Sales);
+  const items = useSelector((state) => state.items.Items);
+  const admin = useSelector((state) => state.admin.Admin);
+  const clients = useSelector((state) => state.clients.Clients);
+  document.title = store
+    ? store?.name
+    : "Gadgets Shop Management System | Bongostores";
   return (
     <BrowserRouter>
       <div className="container">
         <Routes>
           <Route path="/tuts" element={<Tutorials />} />
-          <Route
-            path="/sub"
-            element={store ? <Subscribe /> : <Navigate to="/login" />}
-          />
-          <Route
-            path="/renew"
-            element={store ? <RenewSub /> : <Navigate to="/login" />}
-          />
+
           <Route path="/register" element={<Register />} />
           <Route
             path="/login"
@@ -43,21 +37,21 @@ function App() {
             }
           />
           <Route
-            path="/admin"
-            element={
-              admin && clients !== null ? <Navigate to="/" /> : <AdminLogin />
-            }
-          />
-          <Route
             path="/"
             element={
               store && items !== null && sales !== null ? (
                 <Dashboard />
               ) : admin && clients !== null ? (
-                <AdminDashboard />
+                <Admin />
               ) : (
                 <Navigate to="/login" />
               )
+            }
+          />
+          <Route
+            path="/admin"
+            element={
+              admin && clients !== null ? <Navigate to="/" /> : <AdminLogin />
             }
           />
           <Route

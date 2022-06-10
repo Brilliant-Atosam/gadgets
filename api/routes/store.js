@@ -2,7 +2,7 @@ const router = require("express").Router();
 const bcrypt = require("bcryptjs/dist/bcrypt");
 const moment = require("moment");
 const Store = require("../models/Store");
-// GET ALL DEVICES
+// GET ALL stores
 router.get("/", async (req, res) => {
   try {
     const stores = await Store.find();
@@ -13,15 +13,16 @@ router.get("/", async (req, res) => {
 });
 // ADD Store
 router.post("/", async (req, res) => {
-  const { name, password, phone } = req.body;
+  const { name, password, phone, password2, createdAt, id } = req.body;
 
   try {
     const newStore = new Store({
       name,
       password: await bcrypt.hash(password, 10),
+      admin: await bcrypt.hash(password2, 10),
       phone,
-      createdAt: moment().format("DD/MM/YYYY h:mm:ss"),
-      id: (Math.floor(Math.random() * 100000) + 100000).toString().substring(1),
+      createdAt,
+      id,
     });
     await newStore.save();
     res.status(200).json(newStore);
@@ -40,32 +41,34 @@ router.put("/:id", async (req, res) => {
         nextVerification: moment().add(30, "days").format("MM/DD/YYYY"),
       }
     );
-    res.status(200).json();
-    console.log("The work is done");
+    res.status(200).json(`Subscription was successful`);
   } catch (err) {
     res.status(500).json("Oooops! Try again");
     console.log(err.message);
   }
 });
-// RESET PASSWOR DDEVICE
+// Reset store's paasword
 router.put("/password/reset", async (req, res) => {
-  const { oldPassword, password } = req.body;
+  const { oldPassword, password, admin } = req.body;
+  console.log(req.body);
   try {
     const store = await Store.findOne({ id: req.query.id });
-    if (!(await bcrypt.compare(oldPassword, store.password))) {
+    if (!(await bcrypt.compare(oldPassword, store.admin))) {
       res.status(401).json("Wrong password!");
     } else {
-      await store.updateOne({ password: await bcrypt.hash(password, 10) });
-      res.json("Reset was successful!");
+      admin
+        ? await store.updateOne({ admin: await bcrypt.hash(password, 10) })
+        : await store.updateOne({ password: await bcrypt.hash(password, 10) });
+      res.json(`Reset of ${admin ? "Admins" : "Attendant's"} was successful!`);
     }
   } catch (err) {
     res.status(500).json("Oooops! Try again");
   }
 });
-// DELETE DDEVICE
-router.delete("/:id", async (req, res) => {
+// DELETE STORE
+router.delete("/", async (req, res) => {
   try {
-    await Device.findOneAndDelete({ id: req.params.id });
+    await Store.findOneAndDelete({ id: req.query.id });
     res.json("Deletion successful!");
   } catch (err) {
     res.status(500).json("Oooops! Try again");

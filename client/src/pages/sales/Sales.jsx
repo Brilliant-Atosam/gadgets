@@ -20,42 +20,34 @@ import { useState } from "react";
 import { useDispatch } from "react-redux";
 const Sales = () => {
   const storeId = localStorage.getItem("storeId");
+  const store = useSelector((state) => state.store.Store);
   const dispatch = useDispatch();
   const salesRecords = useSelector((state) => state.sales.Sales);
   const dailySales = salesRecords?.filter(
     (sale) => sale.createdAt?.indexOf(moment().format("DD/MM/YYYY")) > -1
   );
-  let salesTodayFigures = [];
+  let salesTodayFigures = [0, 0];
   dailySales?.forEach((sale) => salesTodayFigures.push(sale.cost));
-  const [dailySalesFigure, setDailySales] = useState(
-    salesTodayFigures.length > 0 ? salesTodayFigures.reduce((a, b) => a + b) : 0
-  );
+  const dailySalesFigure = salesTodayFigures.reduce((a, b) => a + b);
+
   const salesMonth = salesRecords?.filter(
     (sale) => sale?.createdAt?.indexOf(moment().format("/MM/YYYY")) > -1
   );
-  let monthlySalesFigures = [];
+  let monthlySalesFigures = [0, 0];
   salesMonth?.forEach((sale) => monthlySalesFigures.push(sale.cost));
 
-  const [monthlySalesFigure, setMonthlySales] = useState(
-    monthlySalesFigures.length > 0
-      ? monthlySalesFigures.reduce((a, b) => a + b)
-      : 0
-  );
+  const monthlySalesFigure = monthlySalesFigures.reduce((a, b) => a + b);
+
   const salesYear = salesRecords?.filter(
     (sale) => sale?.createdAt?.indexOf(moment().format("/YYYY")) > -1
   );
-  let annualSalesFigures = [];
+  let annualSalesFigures = [0, 0];
   salesYear?.forEach((sale) => annualSalesFigures.push(sale.cost));
-  const annualSalesFigure =
-    annualSalesFigures.length > 0
-      ? annualSalesFigures.reduce((a, b) => a + b)
-      : 0;
-  let totalSalesFigures = [];
+  const annualSalesFigure = annualSalesFigures.reduce((a, b) => a + b);
+
+  let totalSalesFigures = [0, 0];
   salesRecords.forEach((sale) => totalSalesFigures.push(sale.cost));
-  const totalSalesFigure =
-    totalSalesFigures.length > 0
-      ? totalSalesFigures.reduce((a, b) => a + b)
-      : 0;
+  const totalSalesFigure = totalSalesFigures.reduce((a, b) => a + b);
   const [loading, setLoading] = useState(false);
   // REFRESHING DATA
   const handleRefresh = async () => {
@@ -73,92 +65,82 @@ const Sales = () => {
   const janSales = salesRecords?.filter(
     (sale) => sale.createdAt.indexOf("/01/" + new Date().getFullYear()) > -1
   );
-  let janFig = [];
+  let janFig = [0, 0];
   janSales.forEach((s) => janFig.push(s.cost));
   // feb
   const febSales = salesRecords?.filter(
     (sale) => sale.createdAt.indexOf("/02/" + new Date().getFullYear()) > -1
   );
-  let febFig = [];
+  let febFig = [0, 0];
   febSales.forEach((s) => febFig.push(s.cost));
   // mar
   const marSales = salesRecords?.filter(
     (sale) => sale.createdAt.indexOf("/03/" + new Date().getFullYear()) > -1
   );
-  let marFig = [];
+  let marFig = [0, 0];
   marSales.forEach((s) => marFig.push(s.cost));
   // apr
   const aprSales = salesRecords?.filter(
     (sale) => sale.createdAt.indexOf("/04/" + new Date().getFullYear()) > -1
   );
-  let aprFig = [];
+  let aprFig = [0, 0];
   aprSales.forEach((s) => aprFig.push(s.cost));
   // may
   const maySales = salesRecords?.filter(
     (sale) => sale.createdAt.indexOf("/05/" + new Date().getFullYear()) > -1
   );
-  let mayFig = [];
+  let mayFig = [0, 0];
   maySales.forEach((s) => mayFig.push(s.cost));
   // jun
   const junSales = salesRecords?.filter(
     (sale) => sale.createdAt.indexOf("/06/" + new Date().getFullYear()) > -1
   );
-  let junFig = [];
+  let junFig = [0, 0];
   junSales.forEach((s) => junFig.push(s.cost));
   // jul
   const julSales = salesRecords?.filter(
     (sale) => sale.createdAt.indexOf("/07/" + new Date().getFullYear()) > -1
   );
-  let julFig = [];
+  let julFig = [0, 0];
   julSales.forEach((s) => julFig.push(s.cost));
   // aug
   const augSales = salesRecords?.filter(
     (sale) => sale.createdAt.indexOf("/08/" + new Date().getFullYear()) > -1
   );
-  let augFig = [];
+  let augFig = [0, 0];
   augSales.forEach((s) => augFig.push(s.cost));
   // sep
   const sepSales = salesRecords?.filter(
     (sale) => sale.createdAt.indexOf("/09/" + new Date().getFullYear()) > -1
   );
-  let sepFig = [];
+  let sepFig = [0, 0];
   sepSales.forEach((s) => sepFig.push(s.cost));
   // oct
   const octSales = salesRecords?.filter(
     (sale) => sale.createdAt.indexOf("/10/" + new Date().getFullYear()) > -1
   );
-  let octFig = [];
+  let octFig = [0, 0];
   octSales.forEach((s) => octFig.push(s.cost));
   // nov
   const novSales = salesRecords?.filter(
     (sale) => sale.createdAt.indexOf("/11/" + new Date().getFullYear()) > -1
   );
-  let novFig = [];
+  let novFig = [0, 0];
   novSales.forEach((s) => novFig.push(s.cost));
   // dec
   const decSales = salesRecords?.filter(
     (sale) => sale.createdAt.indexOf("/12/" + new Date().getFullYear()) > -1
   );
-  let decFig = [];
+  let decFig = [0, 0];
   decSales.forEach((s) => decFig.push(s.cost));
   const data = [
     {
       name: "Jan",
-      sales:
-        janFig.length > 1
-          ? janFig.reduce((a, b) => a + b)
-          : janFig.length === 1
-          ? janFig[0]
-          : 0,
+      sales: janFig.reduce((a, b) => a + b),
     },
     {
       name: "Feb",
-      sales:
-        febFig.length > 1
-          ? febFig.reduce((a, b) => a + b)
-          : febFig.length === 1
-          ? febFig[0]
-          : 0,
+      sales: febFig.reduce((a, b) => a + b),
     },
     {
       name: "Mar",
@@ -171,86 +153,42 @@ const Sales = () => {
     },
     {
       name: "Apr",
-      sales:
-        aprFig.length > 1
-          ? aprFig.reduce((a, b) => a + b)
-          : aprFig.length === 1
-          ? aprFig[0]
-          : 0,
+      sales: aprFig.reduce((a, b) => a + b),
     },
     {
       name: "May",
-      sales:
-        mayFig.length > 1
-          ? mayFig.reduce((a, b) => a + b)
-          : mayFig.length === 1
-          ? mayFig[0]
-          : 0,
+      sales: mayFig.reduce((a, b) => a + b),
     },
     {
       name: "Jun",
-      sales:
-        junFig.length > 1
-          ? junFig.reduce((a, b) => a + b)
-          : junFig.length === 1
-          ? junFig[0]
-          : 0,
+      sales: junFig.reduce((a, b) => a + b),
     },
     {
       name: "Jul",
-      sales:
-        julFig.length > 1
-          ? julFig.reduce((a, b) => a + b)
-          : julFig.length === 1
-          ? julFig[0]
-          : 0,
+      sales: julFig.reduce((a, b) => a + b),
     },
     {
       name: "Aug",
-      sales:
-        augFig.length > 1
-          ? augFig.reduce((a, b) => a + b)
-          : augFig.length === 1
-          ? augFig[0]
-          : 0,
+      sales: augFig.reduce((a, b) => a + b),
     },
     {
       name: "Sep",
-      sales:
-        sepFig.length > 1
-          ? sepFig.reduce((a, b) => a + b)
-          : sepFig.length === 1
-          ? sepFig[0]
-          : 0,
+      sales: sepFig.reduce((a, b) => a + b),
     },
     {
       name: "Oct",
-      sales:
-        octFig.length > 1
-          ? octFig.reduce((a, b) => a + b)
-          : octFig.length === 1
-          ? octFig[0]
-          : 0,
+      sales: octFig.reduce((a, b) => a + b),
     },
     {
       name: "Nov",
-      sales:
-        novFig.length > 1
-          ? novFig.reduce((a, b) => a + b)
-          : novFig.length === 1
-          ? novFig[0]
-          : 0,
+      sales: novFig.reduce((a, b) => a + b),
     },
     {
       name: "Dec",
-      sales:
-        decFig.length > 1
-          ? decFig.reduce((a, b) => a + b)
-          : decFig.length === 1
-          ? decFig[0]
-          : 0,
+      sales: decFig.reduce((a, b) => a + b),
     },
   ];
+
   return (
     <>
       <Navbar refresh={() => handleRefresh()} />
@@ -259,12 +197,12 @@ const Sales = () => {
         <div className="dash-left">
           <QuickStat
             dailySales={dailySalesFigure}
-            monthlySales={monthlySalesFigure}
-            annualSales={annualSalesFigure}
-            overallSales={totalSalesFigure}
+            monthlySales={store.mode === "Admin" ? monthlySalesFigure : "..."}
+            annualSales={store.mode === "Admin" ? annualSalesFigure : "..."}
+            overallSales={store.mode === "Admin" ? totalSalesFigure : "..."}
           />
-          <div className="items-container">
-            <div className="items-top">
+          <div className="drugs-container">
+            <div className="drugs-top">
               <h1 className="heading">
                 Sales History as at <b>{moment().format("dddd DD-MM-yy")}</b>
               </h1>
@@ -289,7 +227,7 @@ const Sales = () => {
             width={850}
             height={400}
             className="areaChart"
-            data={data}
+            data={store.mode !== "Admin" ? 0 : data}
             margin={{ top: 10, right: 30, left: 0, bottom: 0 }}
           >
             <defs>
@@ -309,9 +247,9 @@ const Sales = () => {
             <Area
               type="monotone"
               dataKey="sales"
-              stroke="#067ed4"
+              stroke="#087a75"
               fillOpacity={1}
-              fill="#3ea1e85e"
+              fill="#30e6dd1b"
             />
           </AreaChart>
         </div>

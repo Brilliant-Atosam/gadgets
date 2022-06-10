@@ -1,9 +1,9 @@
 import "./navbar.css";
 import {
   Autorenew,
+  InventoryOutlined,
   Menu,
   TrendingUp,
-  AddShoppingCart,
 } from "@mui/icons-material";
 import LogoutSharp from "@mui/icons-material/Logout";
 import { useState } from "react";
@@ -20,9 +20,9 @@ const Navbar = ({ refresh }) => {
     setShowMenu(!showMenu);
   };
   const handleLogout = () => {
-    dispatch(Logout());
     dispatch(clearItems());
     dispatch(clearSales());
+    dispatch(Logout());
   };
 
   return (
@@ -39,7 +39,7 @@ const Navbar = ({ refresh }) => {
         <div className="menu-list">
           <Link to="/items">
             <li className="menu-item" key={1}>
-              Items <AddShoppingCart />
+              Items <InventoryOutlined />
             </li>
           </Link>
           <Link to="/sales">

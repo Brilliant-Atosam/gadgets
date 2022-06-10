@@ -14,6 +14,7 @@ export const Login = () => {
 
   const [id, setId] = useState(localStorage.getItem("storeId"));
   const [password, setPassword] = useState("");
+  const [admin, setAdmin] = useState(false);
   const [severity, setSeverity] = useState("info");
   const [message, setMessage] = useState("info");
   const [open, setOpen] = useState(false);
@@ -31,7 +32,9 @@ export const Login = () => {
         const res = await request.post("/auth", {
           id,
           password,
+          admin,
         });
+        console.log(res.data);
         setOpen(true);
         setSeverity("success");
         setMessage("Login successful. Redirecting to dashoard");
@@ -39,10 +42,7 @@ export const Login = () => {
         localStorage.setItem("storeId", id);
         dispatch(itemsStart);
         dispatch(salesStart);
-        if (new Date(res.data.nextVerification) < new Date()) {
-          window.location.href = "/renew";
-        }
-        const items = await request.get(`/devices?storeId=${id}`);
+        const items = await request.get(`/items?storeId=${id}`);
         dispatch(itemsSuccess(items.data));
         const sales = await request.get(`/sales?storeId=${id}`);
         dispatch(salesSuccess(sales.data));
@@ -79,6 +79,10 @@ export const Login = () => {
         value={password}
         event={(e) => setPassword(e.target.value)}
       />
+      <div className="opt">
+        <input type="checkbox" id="admin" onChange={() => setAdmin(!admin)} />{" "}
+        <label htmlFor="admin">Enter admin mode</label>
+      </div>
       <button
         className="btn login-btn"
         disabled={loading}

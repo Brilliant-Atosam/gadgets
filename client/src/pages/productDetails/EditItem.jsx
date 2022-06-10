@@ -8,18 +8,22 @@ import {
   DialogTitle,
 } from "@mui/material";
 import { Close, Check } from "@mui/icons-material";
+
 export default function FormDialog({
   open,
   handleClose,
-  name,
   nameEvent,
-  brand,
-  brandEvent,
-  specs,
-  specsEvent,
-  price,
+  supplierEvent,
+  implicationsEvent,
   priceEvent,
+  dossageEvent,
+  expiryEvent,
   handleEdit,
+  name,
+  supplier,
+  implications,
+  price,
+  dosage,
 }) {
   return (
     <div>
@@ -28,6 +32,7 @@ export default function FormDialog({
         <DialogContent>
           <DialogContentText>Kindly fill all fields</DialogContentText>
           <TextField
+            autoFocus
             margin="dense"
             label="Item name"
             value={name}
@@ -42,17 +47,17 @@ export default function FormDialog({
             label="Brand"
             type="text"
             fullWidth
-            value={brand}
+            value={supplier}
             variant="outlined"
             className="dial-input"
-            onChange={brandEvent}
+            onChange={supplierEvent}
           />
           <TextField
             margin="dense"
-            onChange={specsEvent}
-            label="Specifications"
+            onChange={implicationsEvent}
+            label="Specification"
             type="text"
-            value={specs}
+            value={implications}
             fullWidth
             variant="outlined"
             className="dial-input"
