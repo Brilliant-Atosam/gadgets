@@ -34,12 +34,6 @@ const QuickStat = ({
         </div>
         <div className="quick-stat-item">
           <span className="number">
-            <b>{expired}</b>
-          </span>
-          <span className="desc">Expired</span>
-        </div>
-        <div className="quick-stat-item">
-          <span className="number">
             <b>&#8373;{dailySales}</b>
           </span>
           <span className="desc">{moment().format("ddd, D MMM")}</span>
